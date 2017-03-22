@@ -7,6 +7,7 @@
 
 #import "SMNode.h"
 #import "SMTransition.h"
+#import "SMStateMachine.h"
 
 
 @interface SMNode()
@@ -16,6 +17,7 @@
 @implementation SMNode
 @synthesize name = _name;
 @synthesize transitions = _transitions;
+@synthesize parent = _parent;
 
 - (id)initWithName:(NSString *)name {
     self = [super init];
@@ -25,16 +27,16 @@
     return self;
 }
 
-- (void)_entryWithContext:(SMStateMachineExecuteContext *)context {
+- (void)_entryWithContext:(SMStateMachineExecuteContext *)context withPiggyback: (NSDictionary *) piggyback {
 
 }
 
-- (void)_exitWithContext:(SMStateMachineExecuteContext *)context {
+- (void)_exitWithContext:(SMStateMachineExecuteContext *)context withPiggyback: (NSDictionary *) piggyback {
 
 }
 
-- (void)_postEvent:(NSString *)event withContext:(SMStateMachineExecuteContext *)context {
-
+- (void) _postEvent:(NSString *)event withContext:(SMStateMachineExecuteContext *)context withPiggyback:(NSDictionary *)piggyback {
+    
 }
 
 - (void)_addTransition:(SMTransition *)transition {
@@ -47,6 +49,14 @@
             return curTr;
         }
     }
+    for (SMTransition *curTr in self.transitions) {
+        if ([curTr.event isEqualToString:SMDEFAULT]) {
+            return curTr;
+        }
+    }
+    if (self.parent) {
+        return [self.parent _getTransitionForEvent:event];
+    }
     return nil;
 }
 
@@ -56,6 +66,14 @@
         _transitions = [[NSMutableArray alloc] init];
     }
     return _transitions;
+}
+
+- (NSString *) transitionsPlantuml {
+    NSString *result = @"";
+    for (SMTransition *transition in self.transitions) {
+        result = [result stringByAppendingFormat:@"%@ --> %@ : %@\n", transition.from.name, transition.to.name ?: transition.from.name, transition.event];
+    }
+    return result;
 }
 
 

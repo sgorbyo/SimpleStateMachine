@@ -35,41 +35,39 @@
 #import "SMTransition.h"
 #import "SMDecision.h"
 
+#define SMDEFAULT @"_default_"
+
 
 @interface SMStateMachine : NSObject
 
 - (SMState *)createState:(NSString *)name;
 
+- (SMDecision *)createDecision:(NSString *)name withPredicateBoolBlock:(SMBoolDecisionBlock)block;
 - (SMDecision *)createDecision:(NSString *)name withPredicateBlock:(SMDecisionBlock)block;
 
-- (SMDecision *)createDecision:(NSString *)name withPredicateBoolBlock:(SMBoolDecisionBlock)block;
-
 - (void)transitionFrom:(SMNode *)fromState to:(SMNode *)toState forEvent:(NSString *)event;
-
-- (void)transitionFrom:(SMNode *)fromState to:(SMNode *)toState forEvent:(NSString *)event withAction:(SMAction *)action;
-
-- (void)transitionFrom:(SMNode *)fromState to:(SMNode *)toState forEvent:(NSString *)event withSel:(SEL)actionSel;
-- (void)transitionFrom:(SMNode *)fromState to:(SMNode *)toState forEvent:(NSString *)event withSelectors:(SEL)actionSelectors,...;
-
-- (void)transitionFrom:(SMNode *)fromState to:(SMNode *)toState forEvent:(NSString *)event withSel:(SEL)actionSel executeIn:(NSObject *)executeIn;
+- (void)transitionFrom:(SMNode *)fromState to:(SMNode *)toState forEvent:(NSString *)event withBlock:(SMActionBlock) actionBlock;
 
 - (void)trueTransitionFrom:(SMDecision *)fromState to:(SMNode *)toState;
-- (void)trueTransitionFrom:(SMDecision *)fromState to:(SMNode *)toState withSel:(SEL)actionSel;
+- (void)trueTransitionFrom:(SMDecision *)fromState to:(SMNode *)toState withBlock:(SMActionBlock)actionBlock;
 - (void)falseTransitionFrom:(SMDecision *)fromState to:(SMNode *)toState;
-- (void)falseTransitionFrom:(SMDecision *)fromState to:(SMNode *)toState withSel:(SEL)actionSel;
+- (void)falseTransitionFrom:(SMDecision *)fromState to:(SMNode *)toState withBlock:(SMActionBlock)actionBlock;
+- (void)internalTransitionFrom:(SMNode *)fromState forEvent:(NSString *)event;
+- (void)internalTransitionFrom:(SMNode *)fromState forEvent:(NSString *)event withBlock:(SMActionBlock)actionBlock;
 
-- (void)internalTransitionFrom:(SMNode *)fromState forEvent:(NSString *)event withSel:(SEL)actionSel;
-- (void)internalTransitionFrom:(SMNode *)fromState forEvent:(NSString *)event withSelectors:(SEL)actionSelectors,...;
-- (void)internalTransitionFrom:(SMNode *)fromState forEvent:(NSString *)event withSel:(SEL)actionSel executeIn:(NSObject *)executeIn;
-
-- (void)post:(NSString *)event;
+- (void)post:(NSString *)event withPiggyback: (NSDictionary *) piggyback;
 
 - (void)validate;
+
+- (NSString *) plantUml;
+- (NSMutableDictionary *) statesTreeFrom: (NSString *) parent;
 
 @property(nonatomic, weak) NSObject *globalExecuteIn;
 @property(nonatomic, readonly) SMNode *curState;
 @property(nonatomic) SMNode *initialState;
 @property(nonatomic, weak) id <SMMonitorDelegate> monitor;
+
+@property(nonatomic, readonly) NSArray *allStates;
 
 @end
 

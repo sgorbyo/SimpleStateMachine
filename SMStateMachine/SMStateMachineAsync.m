@@ -15,9 +15,9 @@
 @implementation SMStateMachineAsync
 
 
-- (void)postAsync:(NSString *)event {
+- (void)postAsync:(NSString *)event withPiggyback: (NSDictionary *) piggyback {
     dispatch_async(self.serialQueue, ^{
-        [self post: event];
+        [self post: event withPiggyback:piggyback];
     });
 }
 
@@ -27,7 +27,7 @@
     }
 }
 
--(NSString *)postAsync:(NSString *)event after:(NSUInteger)milliseconds {
+-(NSString *)postAsync:(NSString *)event withPiggyback:(NSDictionary *)piggyback after:(NSUInteger)milliseconds {
     __weak SMStateMachineAsync* weakSelf = self;
     NSString *uuid = [self createUuid];
     [self.allowedTimingEvents addObject:uuid];
@@ -35,7 +35,7 @@
     dispatch_after(timeout, self.serialQueue, ^{
         if ([weakSelf.allowedTimingEvents containsObject:uuid]){
             [weakSelf.allowedTimingEvents removeObject:uuid];
-            [weakSelf postAsync:event];
+            [weakSelf postAsync:event withPiggyback:piggyback];
         }
     });
     return uuid;

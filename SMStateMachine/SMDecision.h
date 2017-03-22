@@ -12,8 +12,8 @@
 #define SM_EVENT_TRUE @"SM_TRUE"
 #define SM_EVENT_FALSE @"SM_FALSE"
 
-typedef NSString * (^SMDecisionBlock)();
-typedef BOOL (^SMBoolDecisionBlock)();
+typedef BOOL (^SMBoolDecisionBlock)(NSDictionary *piggyback);
+typedef NSString * (^SMDecisionBlock)(NSDictionary *piggyback);
 
 @interface SMDecision : SMNode
 

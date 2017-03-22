@@ -10,8 +10,8 @@
 #import "SMStateMachine.h"
 
 @implementation SMStateMachineTests {
-    NSInteger _counter;
-    NSMutableString * _string;
+    __block NSInteger _counter;
+    __block NSMutableString * _string;
 }
 
 - (void)setUp
@@ -31,14 +31,14 @@
 - (void)testEmpty
 {
     SMStateMachine *  sm = [[SMStateMachine alloc] init];
-    STAssertNotNil(sm, @"sm is nil");
+    XCTAssertNotNil(sm, @"sm is nil");
 }
 
 - (void)testSimpleState
 {
     SMStateMachine *  sm = [[SMStateMachine alloc] init];
     SMState *state1 = [sm createState:@"state1"];
-    STAssertEqualObjects(state1.name, @"state1", @"Invalid state name");
+    XCTAssertEqualObjects(state1.name, @"state1", @"Invalid state name");
 }
 
 - (void)testInitial
@@ -57,22 +57,22 @@
     sm.initialState =  initial;
     SMState *state1 = [sm createState:@"state1"];
     [sm transitionFrom:initial to:state1 forEvent:@"event1"];
-    [sm post:@"event1"];
-    STAssertEqualObjects(sm.curState.name, @"state1", @"Invalid current state");
+    [sm post:@"event1" withPiggyback:nil];
+    XCTAssertEqualObjects(sm.curState.name, @"state1", @"Invalid current state");
 }
 
 - (void)testValidateNoStates
 {
     SMStateMachine *  sm = [[SMStateMachine alloc] init];
-    STAssertThrows([sm validate], @"Check for no initial state");
+    XCTAssertThrows([sm validate], @"Check for no initial state");
 }
 
 - (void)testValidateNoInitialState
 {
     SMStateMachine *  sm = [[SMStateMachine alloc] init];
     SMState *state1 = [sm createState:@"state1"];
-    STAssertNotNil(state1, @"state1 is nil");
-    STAssertThrows([sm validate], @"Check for no initial state");
+    XCTAssertNotNil(state1, @"state1 is nil");
+    XCTAssertThrows([sm validate], @"Check for no initial state");
 }
 
 -(void)simpleMethod {
@@ -86,10 +86,12 @@
     SMState *initial = [sm createState:@"initial"];
     sm.initialState = initial;
     SMState *state1 = [sm createState:@"state1"];
-    [state1 setEntrySelector:@selector(simpleMethod) executeIn:self];
+    [state1 setEntryBlock:^(NSDictionary *piggyback) {
+        [self simpleMethod];
+    }];
     [sm transitionFrom:initial to:state1 forEvent:@"event1"];
-    [sm post:@"event1"];
-    STAssertEquals(_counter, 1, @"Entry action not executed");
+    [sm post:@"event1" withPiggyback:nil];
+    XCTAssertEqual(_counter, 1, @"Entry action not executed");
 }
 
 - (void)testExitExecute
@@ -100,12 +102,14 @@
     sm.initialState = initial;
     SMState *state1 = [sm createState:@"state1"];
     SMState *state2 = [sm createState:@"state2"];
-    [state1 setExitSelector:@selector(simpleMethod) executeIn:self];
+    [state1 setExitBlock:^(NSDictionary *piggyback) {
+        [self simpleMethod];
+    }];
     [sm transitionFrom:initial to:state1 forEvent:@"event1"];
     [sm transitionFrom:state1 to:state2 forEvent:@"event2"];
-    [sm post:@"event1"];
-    [sm post:@"event2"];
-    STAssertEquals(_counter, 1, @"Exit action not executed");
+    [sm post:@"event1" withPiggyback:nil];
+    [sm post:@"event2" withPiggyback:nil];
+    XCTAssertEqual(_counter, 1, @"Exit action not executed");
 }
 
 - (void)testExecuteActionOnTransition
@@ -115,9 +119,12 @@
     SMState *initial = [sm createState:@"initial"];
     sm.initialState = initial;
     SMState *state1 = [sm createState:@"state1"];
-    [sm transitionFrom:initial to:state1 forEvent:@"event1" withSel:@selector(simpleMethod) executeIn:self];
-    [sm post:@"event1"];
-    STAssertEquals(_counter, 1, @"Transition action not executed");
+    [sm transitionFrom:initial to:state1 forEvent:@"event1" withBlock:^(NSDictionary *piggyback) {
+        [self simpleMethod];
+    }];
+    
+    [sm post:@"event1" withPiggyback:nil];
+    XCTAssertEqual(_counter, 1, @"Transition action not executed");
 }
 
 
@@ -144,30 +151,19 @@
     sm.initialState = initial;
     SMState *state1 = [sm createState:@"state1"];
     SMState *state2 = [sm createState:@"state2"];
-    [state1 setExitSelector:@selector(State1Exit) executeIn:self];
-    [state2 setEntrySelector:@selector(State2Entry) executeIn:self];
+    [state1 setExitBlock:^(NSDictionary *piggyback) {
+        [self State1Exit];
+    }];
+    [state2 setEntryBlock:^(NSDictionary *piggyback) {
+        [self State2Entry];
+    }];
     [sm transitionFrom:initial to:state1 forEvent:@"event1"];
-    [sm transitionFrom:state1 to:state2 forEvent:@"event2" withSel:@selector(TransAction) executeIn:self];
-    [sm post:@"event1"];
-    [sm post:@"event2"];
-    STAssertEqualObjects(_string, @"State1Exit;TransAction;State2Entry;", @"Invalid calling sequence");
-}
-
--(void)testGlobalExecuteIn {
-    _string = [[NSMutableString alloc] init];
-    SMStateMachine *  sm = [[SMStateMachine alloc] init];
-    sm.globalExecuteIn = self;
-    SMState *initial = [sm createState:@"initial"];
-    sm.initialState = initial;
-    SMState *state1 = [sm createState:@"state1"];
-    SMState *state2 = [sm createState:@"state2"];
-    [state1 setExitSelector:@selector(State1Exit)];
-    [state2 setEntrySelector:@selector(State2Entry)];
-    [sm transitionFrom:initial to:state1 forEvent:@"event1"];
-    [sm transitionFrom:state1 to:state2 forEvent:@"event2" withSel:@selector(TransAction)];
-    [sm post:@"event1"];
-    [sm post:@"event2"];
-    STAssertEqualObjects(_string, @"State1Exit;TransAction;State2Entry;", @"Invalid calling sequence");
+    [sm transitionFrom:state1 to:state2 forEvent:@"event2" withBlock:^(NSDictionary *piggyback) {
+        [self TransAction];
+    }];
+    [sm post:@"event1" withPiggyback:nil];
+    [sm post:@"event2" withPiggyback:nil];
+    XCTAssertEqualObjects(_string, @"State1Exit;TransAction;State2Entry;", @"Invalid calling sequence");
 }
 
 - (void)receiveEvent:(NSString *)event forState:(SMNode *)curState foundTransition:(SMTransition *)transition {
@@ -182,8 +178,8 @@
     sm.initialState =  initial;
     SMState *state1 = [sm createState:@"state1"];
     [sm transitionFrom:initial to:state1 forEvent:@"event1"];
-    [sm post:@"event1"];
-    STAssertEquals(_counter, 2, @"Monitor willExecuteTransitionFrom not executed");
+    [sm post:@"event1" withPiggyback:nil];
+    XCTAssertEqual(_counter, 2, @"Monitor willExecuteTransitionFrom not executed");
 }
 
 -(void)testMonitorReceiveEventFoundTransition_NoTransitionsFound {
@@ -194,18 +190,18 @@
     sm.initialState =  initial;
     SMState *state1 = [sm createState:@"state1"];
     [sm transitionFrom:initial to:state1 forEvent:@"event1"];
-    [sm post:@"unknown"];
-    [sm post:@"unknown"];
-    [sm post:@"unknown"];
-    STAssertEquals(_counter, 3, @"Monitor receiveEvent not executed");
+    [sm post:@"unknown" withPiggyback:nil];
+    [sm post:@"unknown" withPiggyback:nil];
+    [sm post:@"unknown" withPiggyback:nil];
+    XCTAssertEqual(_counter, 3, @"Monitor receiveEvent not executed");
 }
 
 
 - (void)didExecuteTransitionFrom:(SMNode *)from to:(SMNode *)to withEvent:(NSString *)event {
     _counter++;
-    STAssertEqualObjects(from.name, @"initial", @"Invalid from state");
-    STAssertEqualObjects(to.name, @"state1", @"Invalid to state");
-    STAssertEqualObjects(event, @"event1", @"Invalid event");
+    XCTAssertEqualObjects(from.name, @"initial", @"Invalid from state");
+    XCTAssertEqualObjects(to.name, @"state1", @"Invalid to state");
+    XCTAssertEqualObjects(event, @"event1", @"Invalid event");
 }
 
 -(void)testMonitorDidExecuteTransitionFrom {
@@ -216,8 +212,8 @@
     sm.initialState =  initial;
     SMState *state1 = [sm createState:@"state1"];
     [sm transitionFrom:initial to:state1 forEvent:@"event1"];
-    [sm post:@"event1"];
-    STAssertEquals(_counter, 2, @"Monitor willExecuteTransitionFrom not executed");
+    [sm post:@"event1" withPiggyback:nil];
+    XCTAssertEqual(_counter, 2, @"Monitor willExecuteTransitionFrom not executed");
 }
 
 -(void)testDecision1{
@@ -226,19 +222,22 @@
     SMState *initial = [sm createState:@"initial"];
     sm.initialState =  initial;
     sm.globalExecuteIn = self;
-
-    SMDecision *decision = [sm createDecision:@"decicson" withPredicateBlock:^(){
+    SMDecision *decision = [sm createDecision:@"decicson" withPredicateBlock:^NSString*(NSDictionary *piggyback) {
         return @"decisionEvent1";
     }];
     SMState *state1 = [sm createState:@"state1"];
     SMState *state2 = [sm createState:@"state2"];
-    [state1 setEntrySelector:@selector(State1Entry)];
-    [state2 setEntrySelector:@selector(State2Entry)];
+    [state1 setEntryBlock:^(NSDictionary *piggyback) {
+        [self State1Entry];
+    }];
+    [state2 setEntryBlock:^(NSDictionary *piggyback) {
+        [self State2Entry];
+    }];
     [sm transitionFrom:initial to:decision forEvent:@"event1"];
     [sm transitionFrom:decision to:state1 forEvent:@"decisionEvent1"];
     [sm transitionFrom:decision to:state2 forEvent:@"decisionEvent2"];
-    [sm post:@"event1"];
-    STAssertEqualObjects(_string, @"State1Entry;", @"Invalid calling sequence");
+    [sm post:@"event1" withPiggyback:nil];
+    XCTAssertEqualObjects(_string, @"State1Entry;", @"Invalid calling sequence");
 }
 
 -(void)testDecision2{
@@ -248,19 +247,195 @@
     sm.initialState =  initial;
     sm.globalExecuteIn = self;
 
-    SMDecision *decision = [sm createDecision:@"decicson" withPredicateBlock:^(){
+    SMDecision *decision = [sm createDecision:@"decicson" withPredicateBlock:^NSString *(NSDictionary *piggyback) {
         return @"decisionEvent2";
     }];
+    
     SMState *state1 = [sm createState:@"state1"];
     SMState *state2 = [sm createState:@"state2"];
-    [state1 setEntrySelector:@selector(State1Entry)];
-    [state2 setEntrySelector:@selector(State2Entry)];
+    [state1 setEntryBlock:^(NSDictionary *piggyback) {
+        [self State1Entry];
+    }];
+    [state2 setEntryBlock:^(NSDictionary *piggyback) {
+        [self State2Entry];
+    }];
     [sm transitionFrom:initial to:decision forEvent:@"event1"];
     [sm transitionFrom:decision to:state1 forEvent:@"decisionEvent1"];
     [sm transitionFrom:decision to:state2 forEvent:@"decisionEvent2"];
-    [sm post:@"event1"];
-    STAssertEqualObjects(_string, @"State2Entry;", @"Invalid calling sequence");
+    [sm post:@"event1"withPiggyback:nil];
+    XCTAssertEqualObjects(_string, @"State2Entry;", @"Invalid calling sequence");
 }
+
+-(void)testDecision3{
+    _string = [[NSMutableString alloc] init];
+    SMStateMachine *  sm = [[SMStateMachine alloc] init];
+    SMState *initial = [sm createState:@"initial"];
+    sm.initialState =  initial;
+    sm.globalExecuteIn = self;
+    
+    SMDecision *decision = [sm createDecision:@"decision" withPredicateBlock:^NSString *(NSDictionary *piggyback) {
+        if (piggyback) {
+            return piggyback[@"switch"];
+        }
+        return @"Nulla";
+    }];
+    
+    SMState *state1 = [sm createState:@"state1"];
+    SMState *state2 = [sm createState:@"state2"];
+    [state1 setEntryBlock:^(NSDictionary *piggyback) {
+        [self State1Entry];
+    }];
+    [state2 setEntryBlock:^(NSDictionary *piggyback) {
+        [self State2Entry];
+    }];
+    [sm transitionFrom:initial to:decision forEvent:@"event1"];
+    [sm transitionFrom:decision to:state1 forEvent:@"decisionEvent1"];
+    [sm transitionFrom:decision to:state2 forEvent:@"decisionEvent2"];
+    NSDictionary *dict = @{@"switch" : @"decisionEvent2"};
+    [sm post:@"event1"withPiggyback:dict];
+    XCTAssertEqualObjects(_string, @"State2Entry;", @"Invalid calling sequence");
+}
+
+- (void)testDecision4{
+    _string = [[NSMutableString alloc] init];
+    SMStateMachine *  sm = [[SMStateMachine alloc] init];
+    SMState *initial = [sm createState:@"initial"];
+    sm.initialState =  initial;
+    sm.globalExecuteIn = self;
+    
+    SMDecision *decision = [sm createDecision:@"decision" withPredicateBlock:^NSString *(NSDictionary *piggyback) {
+        if (piggyback) {
+            return piggyback[@"switch"];
+        }
+        return @"Nulla";
+    }];
+    
+    SMState *state1 = [sm createState:@"state1"];
+    SMState *state2 = [sm createState:@"state2"];
+    [state1 setEntryBlock:^(NSDictionary *piggyback) {
+        [self State1Entry];
+    }];
+    [state2 setEntryBlock:^(NSDictionary *piggyback) {
+        [self State2Entry];
+    }];
+    [sm transitionFrom:initial to:decision forEvent:@"event1"];
+    [sm transitionFrom:decision to:state1 forEvent:@"decisionEvent1"];
+    [sm transitionFrom:decision to:state2 forEvent:@"decisionEvent2"];
+    NSDictionary *dict = @{@"switch" : @"decisionEvent1"};
+    [sm post:@"event1"withPiggyback:dict];
+    XCTAssertNotEqualObjects(_string, @"State2Entry;", @"Invalid calling sequence");
+    XCTAssertEqualObjects(_string, @"State1Entry;", @"Invalid calling sequence");
+}
+
+- (void)testDecision5{
+    _string = [[NSMutableString alloc] init];
+    SMStateMachine *  sm = [[SMStateMachine alloc] init];
+    SMState *initial = [sm createState:@"initial"];
+    sm.initialState =  initial;
+    sm.globalExecuteIn = self;
+    
+    SMDecision *decision = [sm createDecision:@"decision" withPredicateBlock:^NSString *(NSDictionary *piggyback) {
+        if (piggyback) {
+            return piggyback[@"switch"];
+        }
+        return @"Nulla";
+    }];
+    
+    SMState *state1 = [sm createState:@"state1"];
+    SMState *state2 = [sm createState:@"state2"];
+    [state1 setEntryBlock:^(NSDictionary *piggyback) {
+         [_string appendString:piggyback[@"Message1"]];
+    }];
+    [state2 setEntryBlock:^(NSDictionary *piggyback) {
+        [_string appendString:piggyback[@"Message2"]];
+    }];
+    [sm transitionFrom:initial to:decision forEvent:@"event1"];
+    [sm transitionFrom:decision to:state1 forEvent:@"decisionEvent1"];
+    [sm transitionFrom:decision to:state2 forEvent:@"decisionEvent2"];
+    NSDictionary *dict = @{@"switch" : @"decisionEvent2", @"Message1" : @"State1Entry;", @"Message2" : @"State2Entry;"};
+    [sm post:@"event1"withPiggyback:dict];
+    XCTAssertEqualObjects(_string, @"State2Entry;", @"Invalid calling sequence");
+    XCTAssertNotEqualObjects(_string, @"State1Entry;", @"Invalid calling sequence");
+}
+
+- (void)testDefault{
+    _string = [[NSMutableString alloc] init];
+    SMStateMachine *  sm = [[SMStateMachine alloc] init];
+    SMState *initial = [sm createState:@"initial"];
+    sm.initialState =  initial;
+    SMState *state1 = [sm createState:@"state1"];
+    SMState *state2 = [sm createState:@"state2"];
+    [state1 setEntryBlock:^(NSDictionary *piggyback) {
+        [_string appendString:@"State1Entry;"];
+    }];
+    [state2 setEntryBlock:^(NSDictionary *piggyback) {
+        [_string appendString:@"State2Entry;"];
+    }];
+    [sm transitionFrom:initial to:state1 forEvent:@"event1"];
+    [sm transitionFrom:state1 to:state2 forEvent:SMDEFAULT];
+    [sm post:@"event1" withPiggyback:nil];
+    [sm post:@"eventNotRecognized" withPiggyback:nil];
+    XCTAssertEqualObjects(_string, @"State1Entry;State2Entry;", @"Invalid calling sequence");
+}
+
+- (void)testSuperState{
+    _string = [[NSMutableString alloc] init];
+    SMStateMachine *  sm = [[SMStateMachine alloc] init];
+    SMState *initial = [sm createState:@"initial"];
+    sm.initialState =  initial;
+    SMState *state1 = [sm createState:@"state1"];
+    SMState *state2 = [sm createState:@"state2"];
+    [state1 setEntryBlock:^(NSDictionary *piggyback) {
+        [_string appendString:@"State1Entry;"];
+    }];
+    [state1 setExitBlock:^(NSDictionary *piggyback) {
+        [_string appendString:@"State1Exit;"];
+    }];
+    [state2 setExitBlock:^(NSDictionary *piggyback) {
+        [_string appendString:@"State2Exit;"];
+    }];
+    [initial setEntryBlock:^(NSDictionary *piggyback) {
+        [_string appendString:@"InitialEntry;"];
+    }];
+    [sm transitionFrom:initial to:state1 forEvent:@"event1"];
+    [sm transitionFrom:state2 to:initial forEvent:@"event2"];
+    state1.parent = state2;
+    [sm post:@"event1" withPiggyback:nil];
+    [sm post:@"event2" withPiggyback:nil];
+    XCTAssertEqualObjects(_string, @"State1Entry;State1Exit;InitialEntry;", @"Invalid calling sequence");
+}
+
+- (void)testStatesTree{
+    _string = [[NSMutableString alloc] init];
+    SMStateMachine *  sm = [[SMStateMachine alloc] init];
+    SMState *initial = [sm createState:@"initial"];
+    sm.initialState =  initial;
+    SMState *state1 = [sm createState:@"state1"];
+    SMState *state2 = [sm createState:@"state2"];
+    SMState *state1_1 = [sm createState:@"state1.1"];
+    state1_1.parent = state1;
+    SMState *state1_2 = [sm createState:@"state1.2"];
+    state1_2.parent = state1;
+    SMState *state1_3 = [sm createState:@"state1.3"];
+    state1_3.parent = state1;
+    SMState *state1_3_1 = [sm createState:@"state1.3.1"];
+    state1_3_1.parent = state1_3;
+    SMState *state1_3_2 = [sm createState:@"state1.3.2"];
+    state1_3_2.parent = state1_3;
+    NSDictionary *test = [[sm statesTreeFrom:nil] copy];
+    NSDictionary *base = @{@"initial" : @{},
+                           @"state1" : @{@"state1.1" : @{},
+                                         @"state1.2" : @{},
+                                         @"state1.3" : @{@"state1.3.1" : @{},
+                                                         @"state1.3.2" : @{}
+                                                         }
+                                         },
+                           @"state2" : @{}
+                           };
+    state2 = nil;
+    XCTAssertEqualObjects(test, base, @"Invalid states tree");
+}
+
 
 -(void)testBoolDecision{
     _string = [[NSMutableString alloc] init];
@@ -268,19 +443,23 @@
     SMState *initial = [sm createState:@"initial"];
     sm.initialState =  initial;
     sm.globalExecuteIn = self;
-
-    SMDecision *decision = [sm createDecision:@"decicson" withPredicateBoolBlock:^(){
+    SMDecision *decision = [sm createDecision:@"decicson" withPredicateBoolBlock:^BOOL(NSDictionary *piggyback) {
         return NO;
     }];
+    
     SMState *state1 = [sm createState:@"state1"];
     SMState *state2 = [sm createState:@"state2"];
-    [state1 setEntrySelector:@selector(State1Entry)];
-    [state2 setEntrySelector:@selector(State2Entry)];
+    [state1 setEntryBlock:^(NSDictionary *piggyback) {
+        [self State1Entry];
+    }];
+    [state2 setEntryBlock:^(NSDictionary *piggyback) {
+        [self State2Entry];
+    }];
     [sm transitionFrom:initial to:decision forEvent:@"event1"];
     [sm trueTransitionFrom:decision to:state1];
     [sm falseTransitionFrom:decision to:state2];
-    [sm post:@"event1"];
-    STAssertEqualObjects(_string, @"State2Entry;", @"Invalid calling sequence");
+    [sm post:@"event1" withPiggyback:nil];
+    XCTAssertEqualObjects(_string, @"State2Entry;", @"Invalid calling sequence");
 }
 
 -(void)beep{
@@ -303,17 +482,24 @@
     SMState *opened = [sm createState:@"open"];
     SMState *closed = [sm createState:@"closed"];
     sm.initialState = closed;
-    [opened setEntrySelector:@selector(greenLightOn)];
-    [closed setEntrySelector:@selector(redLightOn)];
+    [opened setEntryBlock:^(NSDictionary *piggyback) {
+        [self greenLightOn];
+    }];
+    [closed setEntryBlock:^(NSDictionary *piggyback) {
+        [self redLightOn];
+    }];
+    
     [sm transitionFrom:closed to:opened forEvent:@"coin"];
     [sm transitionFrom:opened to:closed forEvent:@"pass"];
     [sm transitionFrom:opened to:closed forEvent:@"timeout"];
-    [sm transitionFrom:opened to:opened forEvent:@"coint" withSel:@selector(beep)];
+    [sm transitionFrom:opened to:opened forEvent:@"coint" withBlock:^(NSDictionary *piggyback) {
+        [self beep];
+    }];
 
     //Usage
     [sm validate];
-    [sm post:@"coin"];
-    [sm post:@"pass"];
+    [sm post:@"coin" withPiggyback:nil];
+    [sm post:@"pass" withPiggyback:nil];
 }
 
 // An internal loopback "transition" does not change the state, but does execute the transition action.
@@ -324,11 +510,17 @@
     sm.globalExecuteIn = self;
     SMState* state = [sm createState:@"state"];
     sm.initialState = state;
-    [state setEntrySelector:@selector(State1Entry)];
-    [state setExitSelector:@selector(State1Exit)];
-    [sm internalTransitionFrom:state forEvent:kEventLoopback withSel:@selector(TransAction)];
-    [sm post:kEventLoopback];
-    STAssertEqualObjects(_string, @"TransAction;", @"Only the transition action should execute");
+    [state setEntryBlock:^(NSDictionary *piggyback) {
+        [self State1Entry];
+    }];
+    [state setExitBlock:^(NSDictionary *piggyback) {
+        [self State1Exit];
+    }];
+    [sm internalTransitionFrom:state forEvent:kEventLoopback withBlock:^(NSDictionary *piggyback) {
+        [self TransAction];
+    }];
+    [sm post:kEventLoopback withPiggyback:nil];
+    XCTAssertEqualObjects(_string, @"TransAction;", @"Only the transition action should execute");
 }
 
 // An external loopback transition leaves the current state, only to return to the same state.
@@ -340,29 +532,19 @@
     sm.globalExecuteIn = self;
     SMState* state = [sm createState:@"state"];
     sm.initialState = state;
-    [state setEntrySelector:@selector(State1Entry)];
-    [state setExitSelector:@selector(State1Exit)];
-    [sm transitionFrom:state to:state forEvent:kEventLoopback withSel:@selector(TransAction)];
-    [sm post:kEventLoopback];
-    STAssertEqualObjects(_string, @"State1Exit;TransAction;State1Entry;", @"Invalid calling sequence");
+    [state setEntryBlock:^(NSDictionary *piggyback) {
+        [self State1Entry];
+    }];
+    [state setExitBlock:^(NSDictionary *piggyback) {
+        [self State1Exit];
+    }];
+    [sm transitionFrom:state to:state forEvent:kEventLoopback withBlock:^(NSDictionary *piggyback) {
+        [self TransAction];
+    }];
+    
+    [sm post:kEventLoopback withPiggyback:nil];
+    XCTAssertEqualObjects(_string, @"State1Exit;TransAction;State1Entry;", @"Invalid calling sequence");
 }
 
-- (void)testComplexAction
-{
-    _string = [[NSMutableString alloc] init];
-    SMStateMachine *  sm = [[SMStateMachine alloc] init];
-    sm.globalExecuteIn = self;
-    SMState *initial = [sm createState:@"initial"];
-    sm.initialState = initial;
-    SMState *state1 = [sm createState:@"state1"];
-    SMState *state2 = [sm createState:@"state2"];
-    [state1 setExitSelectors:@selector(State1Exit), @selector(State1Exit),nil];
-    [state2 setEntrySelectors:@selector(State2Entry), @selector(State2Entry), nil];
-    [sm transitionFrom:initial to:state1 forEvent:@"event1"];
-    [sm transitionFrom:state1 to:state2 forEvent:@"event2" withSelectors:@selector(TransAction),@selector(TransAction), nil];
-    [sm post:@"event1"];
-    [sm post:@"event2"];
-    STAssertEqualObjects(_string, @"State1Exit;State1Exit;TransAction;TransAction;State2Entry;State2Entry;", @"Invalid calling sequence");
-}
 
 @end

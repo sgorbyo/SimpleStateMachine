@@ -7,7 +7,6 @@
 
 #import "SMState.h"
 #import "SMTransition.h"
-#import "SMCompositeAction.h"
 
 @implementation SMState
 
@@ -19,37 +18,15 @@
     return [super initWithName:name];
 }
 
-- (void)setEntrySelector:(SEL)entrySel executeIn:(NSObject *)object {
-    self.entry = [SMAction actionWithSel:entrySel executeIn:object];
+- (void) setEntryBlock:(SMActionBlock)entryBlock {
+    self.entry = [SMAction actionWithBlock:entryBlock];
 }
 
-- (void)setExitSelector:(SEL)exitSel executeIn:(NSObject *)object {
-    self.exit = [SMAction actionWithSel:exitSel executeIn:object];
+- (void) setExitBlock:(SMActionBlock)exitBlock {
+    self.exit = [SMAction actionWithBlock:exitBlock];
 }
 
-- (void)setEntrySelector:(SEL)entrySel {
-    self.entry = [SMAction actionWithSel:entrySel];
-}
-
-- (void)setEntrySelectors:(SEL)firstSelector,...{
-    va_list args;
-    va_start(args, firstSelector);
-    self.entry = [SMCompositeAction actionWithFirstSelector:firstSelector andVaList:args];
-    va_end(args);
-}
-
-- (void)setExitSelector:(SEL)exitSel {
-    self.exit = [SMAction actionWithSel:exitSel];
-}
-
-- (void)setExitSelectors:(SEL)firstSelector,...{
-    va_list args;
-    va_start(args, firstSelector);
-    self.exit = [SMCompositeAction actionWithFirstSelector:firstSelector andVaList:args];
-    va_end(args);
-}
-
-- (void)_postEvent:(NSString *)event withContext:(SMStateMachineExecuteContext *)context {
+- (void)_postEvent:(NSString *)event withContext:(SMStateMachineExecuteContext *)context withPiggyback:(NSDictionary *)piggyback {
     SMTransition *curTr = [self _getTransitionForEvent:event];
     if ([context.monitor respondsToSelector:@selector(receiveEvent:forState:foundTransition:)]) {
         [context.monitor receiveEvent:event forState:self foundTransition:curTr];
@@ -59,16 +36,16 @@
         
         // Exit the old state.
         if (shouldChangeStates) {
-            [self _exitWithContext:context];
+            [self _exitWithContext:context withPiggyback:piggyback];
             context.curState = curTr.to;
         }
         
         // Execute the transition action.
-        [[curTr action] executeWithGlobalObject:context.globalExecuteIn];
+        [[curTr action] executeWithPiggyback:piggyback];
         
         // Enter the new state.
         if (shouldChangeStates) {
-            [context.curState _entryWithContext:context];
+            [context.curState _entryWithContext:context withPiggyback:piggyback];
         }
         
         // Inform the monitor.
@@ -79,12 +56,12 @@
 
 }
 
-- (void)_entryWithContext:(SMStateMachineExecuteContext *)context {
-    [self.entry executeWithGlobalObject:context.globalExecuteIn];
+- (void)_entryWithContext:(SMStateMachineExecuteContext *)context withPiggyback:(NSDictionary *)piggyback {
+    [self.entry executeWithPiggyback:piggyback];
 }
 
-- (void)_exitWithContext:(SMStateMachineExecuteContext *)context {
-    [self.exit executeWithGlobalObject:context.globalExecuteIn];
+- (void)_exitWithContext:(SMStateMachineExecuteContext *)context withPiggyback:(NSDictionary *)piggyback {
+    [self.exit executeWithPiggyback:piggyback];
 }
 
 

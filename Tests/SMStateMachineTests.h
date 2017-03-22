@@ -6,9 +6,9 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 #import "SMStateMachine.h"
 
-@interface SMStateMachineTests : SenTestCase<SMMonitorDelegate>
+@interface SMStateMachineTests : XCTestCase<SMMonitorDelegate>
 
 @end

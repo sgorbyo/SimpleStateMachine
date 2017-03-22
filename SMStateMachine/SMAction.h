@@ -8,20 +8,16 @@
 #import <Foundation/Foundation.h>
 #import "SMActionProtocol.h"
 
+typedef void (^SMActionBlock)(NSDictionary *piggyback);
 
 @interface SMAction : NSObject<SMActionProtocol>
 
-+ (SMAction *)actionWithSel:(SEL)sel;
++ (SMAction *)actionWithBlock:(SMActionBlock)actionBlock;
 
-+ (SMAction *)actionWithSel:(SEL)sel executeIn:(NSObject *)executeInObj;
+- (id)initWithBlock:(SMActionBlock)actionBlock;
 
-- (id)initWithSel:(SEL)sel executeIn:(NSObject *)executeInObj;
+- (void)executeWithPiggyback: (NSDictionary *) piggyback;
 
-- (id)initWithSel:(SEL)sel;
-
-- (void)execute;
-
-@property(nonatomic, readonly) SEL sel;
-@property(nonatomic, readonly, weak) NSObject *executeInObj;
+@property (nonatomic, copy) SMActionBlock actionBlock;
 
 @end

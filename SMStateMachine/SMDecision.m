@@ -25,20 +25,21 @@
 - (id)initWithName:(NSString *)name andBoolBlock:(SMBoolDecisionBlock)block {
     self = [super initWithName:name];
     if (self) {
-        _block = ^{
-          BOOL res = block();
+        _block = ^(NSDictionary *piggyback){
+          BOOL res = block(piggyback);
           return res ? SM_EVENT_TRUE : SM_EVENT_FALSE;
         };
     }
     return self;
 }
 
-- (void)_entryWithContext:(SMStateMachineExecuteContext *)context {
+
+- (void)_entryWithContext:(SMStateMachineExecuteContext *)context withPiggyback: (NSDictionary *) piggyback {
     if (_block == nil){
         [NSException raise:SMEXCEPTION format:@"Block must be set"];
         return;
     }
-    NSString *eventToPost = self.block();
+    NSString *eventToPost = self.block(piggyback);
     SMTransition *curTr = [self _getTransitionForEvent:eventToPost];
     if (curTr == nil){
         [NSException raise:SMEXCEPTION format:@"Invalid event for this decision"];
@@ -49,20 +50,19 @@
     }
     context.curState = curTr.to;
 
-    [[curTr action] executeWithGlobalObject:context.globalExecuteIn];
-    [context.curState _entryWithContext:context];
+    [[curTr action] executeWithPiggyback:piggyback];
+    [context.curState _entryWithContext:context withPiggyback:piggyback];
     if ([context.monitor respondsToSelector:@selector(didExecuteTransitionFrom:to:withEvent:)]) {
         [context.monitor didExecuteTransitionFrom:curTr.from to:context.curState withEvent:eventToPost];
     }
 
-
 }
 
-- (void)_exitWithContext:(SMStateMachineExecuteContext *)context {
-    [super _exitWithContext:context];
+- (void)_exitWithContext:(SMStateMachineExecuteContext *)context withPiggyback: (NSDictionary *) piggyback {
+    [super _exitWithContext:context withPiggyback:piggyback];
 }
 
-- (void)_postEvent:(NSString *)event withContext:(SMStateMachineExecuteContext *)context {
+- (void)_postEvent:(NSString *)event withContext:(SMStateMachineExecuteContext *)context withPiggyback: (NSDictionary *) piggyback {
     [NSException raise:SMEXCEPTION format:@"Post event not supported in desicions"];
 }
 

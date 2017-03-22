@@ -16,8 +16,8 @@
  */
 @property (nonatomic, strong) dispatch_queue_t serialQueue;
 
--(void)postAsync:(NSString *)event;
--(NSString *)postAsync:(NSString *)event after:(NSUInteger)milliseconds;
+- (void)postAsync:(NSString *)event withPiggyback: (NSDictionary *) piggyback;
+-(NSString *)postAsync:(NSString *)event withPiggyback: (NSDictionary *) piggyback after:(NSUInteger)milliseconds;
 -(void)dropTimingEvent:(NSString *)eventUuid;
 
 

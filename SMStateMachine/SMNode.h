@@ -11,13 +11,17 @@
 
 @interface SMNode : NSObject
 @property(nonatomic, readonly, strong) NSString *name;
+@property(nonatomic, weak) SMNode *parent;
 
 - (id)initWithName:(NSString *)name;
-- (void)_postEvent:(NSString *)event withContext:(SMStateMachineExecuteContext *)context;
-- (void)_entryWithContext:(SMStateMachineExecuteContext *)context;
-- (void)_exitWithContext:(SMStateMachineExecuteContext *)context;
+
+- (void)_postEvent:(NSString *)event withContext:(SMStateMachineExecuteContext *)context withPiggyback: (NSDictionary *) piggyback;
+- (void)_entryWithContext:(SMStateMachineExecuteContext *)context withPiggyback: (NSDictionary *) piggyback;
+- (void)_exitWithContext:(SMStateMachineExecuteContext *)context withPiggyback: (NSDictionary *) piggyback;
 
 - (void)_addTransition:(SMTransition *)transition;
 - (SMTransition *)_getTransitionForEvent:(NSString *)event;
+
+- (NSString *) transitionsPlantuml;
 
 @end

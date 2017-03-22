@@ -5,8 +5,8 @@
 //
 
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 #import "SMStateMachine.h"
 
-@interface SMTurnstileTests : SenTestCase
+@interface SMTurnstileTests : XCTestCase
 @end
