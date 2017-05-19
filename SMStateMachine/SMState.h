@@ -19,6 +19,7 @@
 
 - (void) setExitBlock:(SMActionBlock)exitBlock;
 
+
 @property(nonatomic, strong) id<SMActionProtocol> entry;
 @property(nonatomic, strong) id<SMActionProtocol> exit;
 

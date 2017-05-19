@@ -23,6 +23,7 @@
     self = [super init];
     if (self) {
         _name = name;
+        _localProperties = [NSMutableDictionary new];
     }
     return self;
 }

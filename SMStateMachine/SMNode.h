@@ -13,6 +13,8 @@
 @property(nonatomic, readonly, strong) NSString *name;
 @property(nonatomic, weak) SMNode *parent;
 
+@property (nonatomic, nullable, strong) NSMutableDictionary *localProperties;
+
 - (id)initWithName:(NSString *)name;
 
 - (void)_postEvent:(NSString *)event withContext:(SMStateMachineExecuteContext *)context withPiggyback: (NSDictionary *) piggyback;
