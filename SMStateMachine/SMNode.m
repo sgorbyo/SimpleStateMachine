@@ -71,8 +71,35 @@
 
 - (NSString *) transitionsPlantuml {
     NSString *result = @"";
+    NSString *arrowType = nil;
+    NSString *arrowColor = nil;
     for (SMTransition *transition in self.transitions) {
-        result = [result stringByAppendingFormat:@"%@ --> %@ : %@\n", transition.from.name, transition.to.name ?: transition.from.name, transition.event];
+        if ([transition.event isEqualToString:@"SM_TRUE"]) {
+            arrowType = @"-[#green,bold]->";
+            arrowColor = @"<color:Green>";
+        } else if ([transition.event isEqualToString:@"SM_FALSE"]) {
+            arrowType = @"-[#red,bold]->";
+            arrowColor = @"<color:Red>";
+        } else if ([transition.event isEqualToString:@"dragTouchStart"]) {
+            arrowType = @"-[#Blue,bold]->";
+            arrowColor = @"<color:Blue>";
+        } else if ([transition.event isEqualToString:@"dragTouchContinue"]) {
+            arrowType = @"-[#Magenta,bold]->";
+            arrowColor = @"<color:Magenta>";
+        } else if ([transition.event isEqualToString:@"dragTouchEnd"]) {
+            arrowType = @"-[#Violet,bold]->";
+            arrowColor = @"<color:Violet>";
+        } else if ([transition.event isEqualToString:@"touch"]) {
+            arrowType = @"-[#DarkSeaGreen,bold]->";
+            arrowColor = @"<color:DarkSeaGreen>";
+        } else if ([transition.event isEqualToString:@"doubleTouch"]) {
+            arrowType = @"-[#Darkorange,bold]->";
+            arrowColor = @"<color:Darkorange>";
+        } else {
+            arrowType = @"-->";
+            arrowColor = @"<color:Black>";
+        }
+        result = [result stringByAppendingFormat:@"%@ %@ %@ : %@%@\n", transition.from.name, arrowType, transition.to.name ?: transition.from.name, arrowColor, transition.event];
     }
     return result;
 }

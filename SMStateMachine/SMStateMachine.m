@@ -158,7 +158,7 @@
     result = [result stringByAppendingString:@"\tskinparam StateBackgroundColor<<Decision>> Yellow\n"];
     result = [result stringByAppendingString:@"\tskinparam StateBorderColor<<Decision>> Red\n"];
     result = [result stringByAppendingString:@"\tskinparam StateBorderColor Black\n"];
-    result = [result stringByAppendingString:@"\tskinparam StateFontName Impact\n"];
+    result = [result stringByAppendingString:@"\tskinparam StateFontName Arial\n"];
     result = [result stringByAppendingString:@"\tskinparam stateFontColor<<Decision>> Red\n"];
     result = [result stringByAppendingString:@"\tskinparam stateFontColor Black\n"];
     
