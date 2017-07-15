@@ -13,15 +13,12 @@
 
 @interface SMState : SMNode
 
-- (id)initWithName:(NSString *)name;
+- (void) setEntryBlock:(nullable SMActionBlock)entryBlock;
 
-- (void) setEntryBlock:(SMActionBlock)entryBlock;
+- (void) setExitBlock:(nullable SMActionBlock)exitBlock;
 
-- (void) setExitBlock:(SMActionBlock)exitBlock;
-
-
-@property(nonatomic, strong) id<SMActionProtocol> entry;
-@property(nonatomic, strong) id<SMActionProtocol> exit;
+@property(nonatomic, strong, nullable) id<SMActionProtocol> entry;
+@property(nonatomic, strong, nullable) id<SMActionProtocol> exit;
 
 @end
 

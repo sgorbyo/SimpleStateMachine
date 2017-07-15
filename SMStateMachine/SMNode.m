@@ -19,11 +19,12 @@
 @synthesize transitions = _transitions;
 @synthesize parent = _parent;
 
-- (id)initWithName:(NSString *)name {
+- (instancetype) initWithName:(nonnull NSString *)name umlStateDescription:(nullable NSString *)umlStateDescription{
     self = [super init];
     if (self) {
         _name = name;
         _localProperties = [NSMutableDictionary new];
+        _umlStateDescription = umlStateDescription;
     }
     return self;
 }

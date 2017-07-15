@@ -14,16 +14,16 @@
 @synthesize block = _block;
 
 
-- (id)initWithName:(NSString *)name andBlock:(SMDecisionBlock)block {
-    self = [super initWithName:name];
+- (instancetype) initWithName:(NSString *)name umlStateDescription:(nullable NSString *)umlStateDescription andBlock:(SMDecisionBlock)block {
+    self = [super initWithName:name umlStateDescription:umlStateDescription];
     if (self) {
         _block = block;
     }
     return self;
 }
 
-- (id)initWithName:(NSString *)name andBoolBlock:(SMBoolDecisionBlock)block {
-    self = [super initWithName:name];
+- (id)initWithName:(NSString *)name umlStateDescription:(nullable NSString *)umlStateDescription andBoolBlock:(SMBoolDecisionBlock)block {
+    self = [super initWithName:name umlStateDescription:umlStateDescription];
     if (self) {
         _block = ^(NSDictionary *piggyback){
           BOOL res = block(piggyback);
@@ -48,6 +48,9 @@
     if ([context.monitor respondsToSelector:@selector(receiveEvent:forState:foundTransition:)]) {
         [context.monitor receiveEvent:eventToPost forState:self foundTransition:curTr];
     }
+    if ([context.monitor respondsToSelector:@selector(stateMachine:receiveEvent:forState:foundTransition:)]) {
+        [context.monitor stateMachine: context.stateMachine receiveEvent:eventToPost forState:self foundTransition:curTr];
+    }
     context.curState = curTr.to;
 
     [[curTr action] executeWithPiggyback:piggyback];
@@ -55,7 +58,9 @@
     if ([context.monitor respondsToSelector:@selector(didExecuteTransitionFrom:to:withEvent:)]) {
         [context.monitor didExecuteTransitionFrom:curTr.from to:context.curState withEvent:eventToPost];
     }
-
+    if ([context.monitor respondsToSelector:@selector(stateMachine:didExecuteTransitionFrom:to:withEvent:)]) {
+        [context.monitor stateMachine: context.stateMachine didExecuteTransitionFrom:curTr.from to:context.curState withEvent:eventToPost];
+    }
 }
 
 - (void)_exitWithContext:(SMStateMachineExecuteContext *)context withPiggyback: (NSDictionary *) piggyback {

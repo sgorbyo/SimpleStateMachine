@@ -6,5 +6,7 @@
 #import <Foundation/Foundation.h>
 
 @protocol SMActionProtocol <NSObject>
-- (void)executeWithPiggyback: (NSDictionary *) piggyback;
+
+- (void) executeWithPiggyback: (NSDictionary *) piggyback;
+
 @end

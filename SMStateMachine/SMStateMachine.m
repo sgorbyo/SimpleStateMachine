@@ -3,6 +3,7 @@
 
 @interface SMStateMachine ()
 @property(strong, nonatomic, readonly) NSMutableArray *states;
+@property (strong, nonatomic) NSMutableArray *allowedTimingEvents;
 @end
 
 @implementation SMStateMachine
@@ -16,20 +17,47 @@
     return [self.states copy];
 }
 
-- (SMState *)createState:(NSString *)name {
-    SMState *state = [[SMState alloc] initWithName:name];
+- (SMState *)createState:(NSString *)name umlStateDescription:(nullable NSString *)umlStateDescription {
+    SMState *state = [[SMState alloc] initWithName:name umlStateDescription:umlStateDescription];
     [self.states addObject:state];
     return state;
 }
 
-- (SMDecision *)createDecision:(NSString *)name withPredicateBoolBlock:(SMBoolDecisionBlock)block {
-    SMDecision* node = [[SMDecision alloc] initWithName:name andBoolBlock:block];
+- (nullable SMStateWithUserMessage *)createStateWithUserMessage:(nonnull NSString *)name
+                                            umlStateDescription: (nullable NSString *) umlStateDescription
+                                                    messageType: (ILTMessageType) messageType
+                                                          title: (nullable NSString *) title
+                                                     messageOsx: (nullable NSString *) messageOsx
+                                                     messageIos: (nullable NSString *) messageIos
+                                                      helpTitle: (nullable NSString *) helpTitle
+                                                   helpResource: (nullable NSString *) helpResource
+                                                     suppressId: (nullable NSString *) suppressId
+                                                        okTitle: (nullable NSString *) okTitle
+                                                    cancelTitle: (nullable NSString *) cancelTitle {
+    
+    SMStateWithUserMessage *state = [[SMStateWithUserMessage alloc] initWithName:name
+                                                             umlStateDescription:umlStateDescription
+                                                                     messageType:messageType
+                                                                           title:title
+                                                                      messageOsx:messageOsx
+                                                                      messageIos:messageIos
+                                                                       helpTitle:helpTitle
+                                                                    helpResource:helpResource
+                                                                      suppressId:suppressId
+                                                                         okTitle:okTitle
+                                                                     cancelTitle:cancelTitle];
+    [self.states addObject:state];
+    return state;
+}
+
+- (SMDecision *)createDecision:(NSString *)name umlStateDescription: (nullable NSString *) umlStateDescription withPredicateBoolBlock:(SMBoolDecisionBlock)block {
+    SMDecision* node = [[SMDecision alloc] initWithName:name umlStateDescription: umlStateDescription andBoolBlock:block];
     [self.states addObject:node];
     return node;
 }
 
-- (SMDecision *)createDecision:(NSString *)name withPredicateBlock:(SMDecisionBlock)block {
-    SMDecision* node = [[SMDecision alloc] initWithName:name andBlock:block];
+- (SMDecision *)createDecision:(NSString *)name umlStateDescription: (nullable NSString *) umlStateDescription withPredicateBlock:(SMDecisionBlock)block {
+    SMDecision* node = [[SMDecision alloc] initWithName:name umlStateDescription: umlStateDescription andBlock:block];
     [self.states addObject:node];
     return node;
 }
@@ -91,8 +119,55 @@
     context.globalExecuteIn = self.globalExecuteIn;
     context.monitor = self.monitor;
     context.curState = _curState;
+    context.stateMachine = self;
     [_curState _postEvent:event withContext:context withPiggyback:piggyback];
     _curState = context.curState;
+}
+
+- (void)postAsync:(NSString *)event withPiggyback: (NSDictionary *) piggyback {
+    dispatch_async(self.serialQueue, ^{
+        [self post: event withPiggyback:piggyback];
+    });
+}
+
+-(void)dropTimingEvent:(NSString *)eventUuid {
+    if ([self.allowedTimingEvents containsObject:eventUuid]){
+        [self.allowedTimingEvents removeObject:eventUuid];
+    }
+}
+
+-(NSString *)postAsync:(NSString *)event withPiggyback:(NSDictionary *)piggyback after:(NSUInteger)milliseconds {
+    __weak SMStateMachine* weakSelf = self;
+    NSString *uuid = [self createUuid];
+    [self.allowedTimingEvents addObject:uuid];
+    dispatch_time_t timeout = dispatch_time(DISPATCH_TIME_NOW, milliseconds * NSEC_PER_MSEC);
+    dispatch_after(timeout, self.serialQueue, ^{
+        if ([weakSelf.allowedTimingEvents containsObject:uuid]){
+            [weakSelf.allowedTimingEvents removeObject:uuid];
+            [weakSelf postAsync:event withPiggyback:piggyback];
+        }
+    });
+    return uuid;
+}
+
+-(NSString *)createUuid{
+    CFUUIDRef uuid = CFUUIDCreate(kCFAllocatorDefault);
+    NSString * res= (__bridge NSString *) (CFUUIDCreateString(kCFAllocatorDefault, uuid));
+    return res;
+}
+
+-(NSMutableArray *)allowedTimingEvents {
+    if (_allowedTimingEvents == nil){
+        _allowedTimingEvents = [[NSMutableArray alloc] init];
+    }
+    return _allowedTimingEvents;
+}
+
+-(dispatch_queue_t)serialQueue {
+    if (_serialQueue == NULL){
+        _serialQueue = dispatch_get_main_queue();
+    }
+    return _serialQueue;
 }
 
 - (NSMutableArray *)states {
@@ -148,6 +223,28 @@
     return result;
 }
 
+- (NSString *) listOfAttributes {
+    NSString *result = @"";
+    for (SMNode *node in self.allStates) {
+        if (node.umlStateDescription) {
+            result = [result stringByAppendingFormat:@"%@ : %@\n", node.name, node.umlStateDescription];
+        }
+        if ([node isMemberOfClass:[SMStateWithUserMessage class]]) {
+            SMStateWithUserMessage *state = (SMStateWithUserMessage *) node;
+            result = [result stringByAppendingFormat:@"%@ : type -> %@\n" , state.name, state.messageTypeDescription];
+            result = [result stringByAppendingFormat:@"%@ : title -> %@\n" , state.name, state.title];
+            result = [result stringByAppendingFormat:@"%@ : messageOsx -> %@\n" , state.name, state.messageOsx];
+            result = [result stringByAppendingFormat:@"%@ : messageIos -> %@\n" , state.name, state.messageIos];
+            result = [result stringByAppendingFormat:@"%@ : helpTitle -> %@\n" , state.name, state.helpTitle];
+            result = [result stringByAppendingFormat:@"%@ : helpResource -> %@\n" , state.name, state.helpResource];
+            result = [result stringByAppendingFormat:@"%@ : suppressId -> %@\n" , state.name, state.suppressId];
+            result = [result stringByAppendingFormat:@"%@ : okTitle -> %@\n" , state.name, state.okTitle];
+            result = [result stringByAppendingFormat:@"%@ : cancelTitle -> %@\n" , state.name, state.cancelTitle];
+        }
+    }
+    return result;
+}
+
 - (NSString *) plantUml {
     NSString *result = @"";
     result = [result stringByAppendingString:@"@startuml\n"];
@@ -168,6 +265,7 @@
     for (SMNode *node in self.allStates) {
         result = [result stringByAppendingString:[node transitionsPlantuml]];
     }
+    result = [result stringByAppendingString:[self listOfAttributes]];
     result = [result stringByAppendingString:@"@enduml\n"];
     return result;
 }

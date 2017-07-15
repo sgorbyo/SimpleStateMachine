@@ -10,9 +10,11 @@
 
 @class SMTransition;
 @class SMNode;
+@class SMStateMachine;
 
 @interface SMStateMachineExecuteContext : NSObject
 @property(nonatomic, weak) id<SMMonitorDelegate> monitor;
 @property(nonatomic, weak) SMNode *curState;
 @property(nonatomic, weak) NSObject *globalExecuteIn;
+@property(nonatomic, weak) SMStateMachine *stateMachine;
 @end

@@ -8,11 +8,13 @@
 #import "SMStateMachineExecuteContext.h"
 #import "SMTransition.h"
 #import "SMNode.h"
+#import "SMStateMachine.h"
 
 
 @implementation SMStateMachineExecuteContext
 @synthesize monitor = _monitor;
 @synthesize globalExecuteIn = _globalExecuteIn;
 @synthesize curState = _curState;
+@synthesize stateMachine = _stateMachine;
 
 @end

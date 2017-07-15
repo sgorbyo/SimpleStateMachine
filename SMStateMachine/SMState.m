@@ -13,11 +13,6 @@
 @synthesize entry = _entry;
 @synthesize exit = _exit;
 
-
-- (id)initWithName:(NSString *)name {
-    return [super initWithName:name];
-}
-
 - (void) setEntryBlock:(SMActionBlock)entryBlock {
     self.entry = [SMAction actionWithBlock:entryBlock];
 }
@@ -51,6 +46,9 @@
         // Inform the monitor.
         if ([context.monitor respondsToSelector:@selector(didExecuteTransitionFrom:to:withEvent:)]) {
             [context.monitor didExecuteTransitionFrom:curTr.from to:context.curState withEvent:event];
+        }
+        if ([context.monitor respondsToSelector:@selector(stateMachine:didExecuteTransitionFrom:to:withEvent:)]) {
+            [context.monitor stateMachine: context.stateMachine didExecuteTransitionFrom:curTr.from to:context.curState withEvent:event];
         }
     }
 

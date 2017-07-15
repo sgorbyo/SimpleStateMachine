@@ -31,6 +31,7 @@
 
 #import <Foundation/Foundation.h>
 #import "SMState.h"
+#import "SMStateWithUserMessage.h"
 #import "SMAction.h"
 #import "SMTransition.h"
 #import "SMDecision.h"
@@ -40,34 +41,54 @@
 
 @interface SMStateMachine : NSObject
 
-- (SMState *)createState:(NSString *)name;
+/**
+ The process events serialQueue. If `NULL` (default), the main serialQueue is used.
+ */
+@property (nonatomic, strong, nullable) dispatch_queue_t serialQueue;
 
-- (SMDecision *)createDecision:(NSString *)name withPredicateBoolBlock:(SMBoolDecisionBlock)block;
-- (SMDecision *)createDecision:(NSString *)name withPredicateBlock:(SMDecisionBlock)block;
+- (nullable SMState *) createState:(nonnull NSString *)name umlStateDescription: (nullable NSString *) umlStateDescription;
 
-- (void)transitionFrom:(SMNode *)fromState to:(SMNode *)toState forEvent:(NSString *)event;
-- (void)transitionFrom:(SMNode *)fromState to:(SMNode *)toState forEvent:(NSString *)event withBlock:(SMActionBlock) actionBlock;
+- (nullable SMStateWithUserMessage *)createStateWithUserMessage:(nonnull NSString *)name
+                                            umlStateDescription: (nullable NSString *) umlStateDescription
+                                                    messageType: (ILTMessageType) messageType
+                                                          title: (nullable NSString *) title
+                                                     messageOsx: (nullable NSString *) messageOsx
+                                                     messageIos: (nullable NSString *) messageIos
+                                                      helpTitle: (nullable NSString *) helpTitle
+                                                   helpResource: (nullable NSString *) helpResource
+                                                     suppressId: (nullable NSString *) suppressId
+                                                        okTitle: (nullable NSString *) okTitle
+                                                    cancelTitle: (nullable NSString *) cancelTitle;
 
-- (void)trueTransitionFrom:(SMDecision *)fromState to:(SMNode *)toState;
-- (void)trueTransitionFrom:(SMDecision *)fromState to:(SMNode *)toState withBlock:(SMActionBlock)actionBlock;
-- (void)falseTransitionFrom:(SMDecision *)fromState to:(SMNode *)toState;
-- (void)falseTransitionFrom:(SMDecision *)fromState to:(SMNode *)toState withBlock:(SMActionBlock)actionBlock;
-- (void)internalTransitionFrom:(SMNode *)fromState forEvent:(NSString *)event;
-- (void)internalTransitionFrom:(SMNode *)fromState forEvent:(NSString *)event withBlock:(SMActionBlock)actionBlock;
+- (nullable SMDecision *)createDecision:(nonnull NSString *)name umlStateDescription: (nullable NSString *) umlStateDescription withPredicateBoolBlock:(nullable SMBoolDecisionBlock)block;
+- (nullable SMDecision *)createDecision:(nonnull NSString *)name umlStateDescription: (nullable NSString *) umlStateDescription withPredicateBlock:(nullable SMDecisionBlock)block;
 
-- (void)post:(NSString *)event withPiggyback: (NSDictionary *) piggyback;
+- (void)transitionFrom:(nonnull SMNode *)fromState to:(nonnull SMNode *)toState forEvent:(nonnull NSString *)event;
+- (void)transitionFrom:(nonnull SMNode *)fromState to:(nonnull SMNode *)toState forEvent:(nonnull NSString *)event withBlock:(nullable SMActionBlock) actionBlock;
+
+- (void)trueTransitionFrom:(nonnull SMDecision *)fromState to:(nonnull SMNode *)toState;
+- (void)trueTransitionFrom:(nonnull SMDecision *)fromState to:(nonnull SMNode *)toState withBlock:(nullable SMActionBlock)actionBlock;
+- (void)falseTransitionFrom:(nonnull SMDecision *)fromState to:(nonnull SMNode *)toState;
+- (void)falseTransitionFrom:(nonnull SMDecision *)fromState to:(nonnull SMNode *)toState withBlock:(nullable SMActionBlock)actionBlock;
+- (void)internalTransitionFrom:(nonnull SMNode *)fromState forEvent:(nonnull NSString *)event;
+- (void)internalTransitionFrom:(nonnull SMNode *)fromState forEvent:(nonnull NSString *)event withBlock:(nullable SMActionBlock)actionBlock;
+
+- (void) post:(nonnull NSString *)event withPiggyback: (nullable NSDictionary *) piggyback;
+- (void) postAsync:(nonnull NSString *)event withPiggyback: (nullable NSDictionary *) piggyback;
+- (nonnull NSString *) postAsync:(nonnull NSString *)event withPiggyback: (nullable NSDictionary *) piggyback after:(NSUInteger)milliseconds;
+- (void) dropTimingEvent:(nonnull NSString *)eventUuid;
 
 - (void)validate;
 
-- (NSString *) plantUml;
-- (NSMutableDictionary *) statesTreeFrom: (NSString *) parent;
+- (nullable NSString *) plantUml;
+- (nullable NSMutableDictionary *) statesTreeFrom: (nullable NSString *) parent;
 
-@property(nonatomic, weak) NSObject *globalExecuteIn;
-@property(nonatomic, readonly) SMNode *curState;
-@property(nonatomic) SMNode *initialState;
-@property(nonatomic, weak) id <SMMonitorDelegate> monitor;
+@property(nonatomic, weak, nullable) NSObject *globalExecuteIn;
+@property(nonatomic, readonly, nullable) SMNode *curState;
+@property(nonatomic, nullable) SMNode *initialState;
+@property(nonatomic, weak, nullable) id <SMMonitorDelegate> monitor;
 
-@property(nonatomic, readonly) NSArray *allStates;
+@property(nonatomic, readonly, nullable) NSArray *allStates;
 
 @end
 

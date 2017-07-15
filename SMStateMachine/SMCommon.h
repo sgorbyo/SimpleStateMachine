@@ -9,6 +9,7 @@
 
 @class SMTransition;
 @class SMNode;
+@class SMStateMachine;
 
 #define SMEXCEPTION @"SMEXCEPTION"
 
@@ -17,4 +18,7 @@
 @optional
 - (void)receiveEvent:(NSString *)event forState:(SMNode *)curState foundTransition:(SMTransition*)transition;
 - (void)didExecuteTransitionFrom:(SMNode *)from to:(SMNode *)to withEvent:(NSString *)event;
+
+- (void) stateMachine: (SMStateMachine *) stateMachine receiveEvent:(NSString *)event forState:(SMNode *)curState foundTransition:(SMTransition*)transition;
+- (void) stateMachine: (SMStateMachine *) stateMachine didExecuteTransitionFrom:(SMNode *)from to:(SMNode *)to withEvent:(NSString *)event;
 @end

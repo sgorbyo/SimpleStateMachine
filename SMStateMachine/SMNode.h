@@ -9,21 +9,24 @@
 #import "SMStateMachineExecuteContext.h"
 
 
+
 @interface SMNode : NSObject
-@property(nonatomic, readonly, strong) NSString *name;
-@property(nonatomic, weak) SMNode *parent;
+@property(nonatomic, readonly, strong, nonnull) NSString *name;
+@property(nonatomic, weak, nullable) SMNode *parent;
+
+@property(nonatomic, strong, nullable) NSString *umlStateDescription;
 
 @property (nonatomic, nullable, strong) NSMutableDictionary *localProperties;
 
-- (id)initWithName:(NSString *)name;
+- (nullable instancetype) initWithName:(nonnull NSString *)name umlStateDescription : (nullable NSString *) umlDescription;
 
-- (void)_postEvent:(NSString *)event withContext:(SMStateMachineExecuteContext *)context withPiggyback: (NSDictionary *) piggyback;
-- (void)_entryWithContext:(SMStateMachineExecuteContext *)context withPiggyback: (NSDictionary *) piggyback;
-- (void)_exitWithContext:(SMStateMachineExecuteContext *)context withPiggyback: (NSDictionary *) piggyback;
+- (void)_postEvent:(nonnull NSString *)event withContext:(nullable SMStateMachineExecuteContext *)context withPiggyback: (nullable NSDictionary *) piggyback;
+- (void)_entryWithContext:(nullable SMStateMachineExecuteContext *)context withPiggyback: (nullable NSDictionary *) piggyback;
+- (void)_exitWithContext:(nullable SMStateMachineExecuteContext *)context withPiggyback: (nullable NSDictionary *) piggyback;
 
-- (void)_addTransition:(SMTransition *)transition;
-- (SMTransition *)_getTransitionForEvent:(NSString *)event;
+- (void)_addTransition:(nonnull SMTransition *)transition;
+- (nullable SMTransition *)_getTransitionForEvent:(nonnull NSString *)event;
 
-- (NSString *) transitionsPlantuml;
+- (nullable NSString *) transitionsPlantuml;
 
 @end

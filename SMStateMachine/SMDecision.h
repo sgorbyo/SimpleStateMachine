@@ -12,13 +12,13 @@
 #define SM_EVENT_TRUE @"SM_TRUE"
 #define SM_EVENT_FALSE @"SM_FALSE"
 
-typedef BOOL (^SMBoolDecisionBlock)(NSDictionary *piggyback);
-typedef NSString * (^SMDecisionBlock)(NSDictionary *piggyback);
+typedef BOOL (^SMBoolDecisionBlock)(NSDictionary * _Nullable piggyback);
+typedef NSString * _Nullable (^SMDecisionBlock)(NSDictionary * _Nullable piggyback);
 
 @interface SMDecision : SMNode
 
-@property (strong, nonatomic) SMDecisionBlock block;
-- (id)initWithName:(NSString *)name andBlock:(SMDecisionBlock)block;
-- (id)initWithName:(NSString *)name andBoolBlock:(SMBoolDecisionBlock)block;
+@property (strong, nonatomic, nullable) SMDecisionBlock block;
+- (nullable instancetype) initWithName:(nonnull NSString *)name umlStateDescription: (nullable NSString *) umlStateDescription andBlock:(SMDecisionBlock _Nullable )block;
+- (nullable instancetype) initWithName:(nonnull NSString *)name umlStateDescription: (nullable NSString *) umlStateDescription andBoolBlock:(SMBoolDecisionBlock _Nullable )block;
 
 @end
