@@ -8,6 +8,7 @@
 #import "SMState.h"
 #import "SMTransition.h"
 
+
 @implementation SMState
 
 @synthesize entry = _entry;
@@ -61,9 +62,6 @@
 - (void)_exitWithContext:(SMStateMachineExecuteContext *)context withPiggyback:(NSDictionary *)piggyback {
     [self.exit executeWithPiggyback:piggyback];
 }
-
-
-
 
 
 @end

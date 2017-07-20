@@ -9,6 +9,8 @@
 #import "SMTransition.h"
 #import "SMStateMachine.h"
 
+NSString *const  StateClassificationTypeKey =  @"StateClassificationTypeKey";
+NSString *const  StateClassificationScopeKey =  @"StateClassificationScopeKey";
 
 @interface SMNode()
 @property(strong, nonatomic) NSMutableArray *transitions;
@@ -69,6 +71,31 @@
     }
     return _transitions;
 }
+
+- (void) setStateClassificationType:(iltStateClassificationType)stateClassificationType {
+    self.localProperties[StateClassificationTypeKey] = @(stateClassificationType);
+}
+
+- (iltStateClassificationType) stateClassificationType {
+    if (!self.localProperties[StateClassificationTypeKey]) {
+        self.localProperties[StateClassificationTypeKey] = @(iltSCNone);
+    }
+    NSNumber *number = self.localProperties[StateClassificationTypeKey];
+    return number.unsignedIntegerValue;
+}
+
+- (void) setStateClassificationScope:(iltStateClassificationScope)stateClassificationScope {
+    self.localProperties[StateClassificationScopeKey] = @(stateClassificationScope);
+}
+
+- (iltStateClassificationScope) stateClassificationScope {
+    if (!self.localProperties[StateClassificationScopeKey]) {
+        self.localProperties[StateClassificationScopeKey] = @(iltSSIndifferent);
+    }
+    NSNumber *number = self.localProperties[StateClassificationScopeKey];
+    return number.unsignedIntegerValue;
+}
+
 
 - (NSString *) transitionsPlantuml {
     NSString *result = @"";

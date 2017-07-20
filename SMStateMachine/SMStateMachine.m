@@ -1,6 +1,37 @@
 
 #import "SMStateMachine.h"
 
+
+NSString *CorrectLenghtAndCharForString(NSString *string, NSUInteger len) {
+    NSString *result = @"";
+    NSArray <NSString *> *mainArray = [string componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
+    NSMutableArray <NSString *> *splittedArray = [NSMutableArray new];
+    for (NSString *part in mainArray) {
+        if (part.length > len) {
+            NSMutableArray <NSString *> *array = [[part componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] mutableCopy];
+            while (array.count > 0) {
+                NSString *small = @"";
+                while (small.length < len && array.count > 0) {
+                    if (small.length > 0) {
+                        small = [small stringByAppendingString:@" "];
+                    }
+                    small = [small stringByAppendingString:array[0]];
+                    [array removeObjectAtIndex:0];
+                }
+                [splittedArray addObject:small];
+            }
+        } else {
+            [splittedArray addObject:part];
+        }
+    }
+    for (NSString *string in splittedArray) {
+        result = [result stringByAppendingString:string];
+        result = [result stringByAppendingString:@"\\n"];
+    }
+    return result;
+}
+
+
 @interface SMStateMachine ()
 @property(strong, nonatomic, readonly) NSMutableArray *states;
 @property (strong, nonatomic) NSMutableArray *allowedTimingEvents;
@@ -227,19 +258,61 @@
     NSString *result = @"";
     for (SMNode *node in self.allStates) {
         if (node.umlStateDescription) {
-            result = [result stringByAppendingFormat:@"%@ : %@\n", node.name, node.umlStateDescription];
+            result = [result stringByAppendingFormat:@"%@ : %@\n", node.name, CorrectLenghtAndCharForString(node.umlStateDescription, 35)];
+        }
+        if (node.stateClassificationType != iltSCNone) {
+            switch (node.stateClassificationType) {
+                case iltSCNormal:
+                    result = [result stringByAppendingFormat:@"%@ : <b>Classification:</b> %@\n", node.name, @"Normal"];
+                    break;
+                case iltSCMovable:
+                    result = [result stringByAppendingFormat:@"%@ : <b>Classification:</b> %@\n", node.name, @"Moveable"];
+                    break;
+                case iltSCMoving:
+                    result = [result stringByAppendingFormat:@"%@ : <b>Classification:</b> %@\n", node.name, @"Moving"];
+                    break;
+                case iltSCConnectingOnSpace:
+                    result = [result stringByAppendingFormat:@"%@ : <b>Classification:</b> %@\n", node.name, @"Connecting On Space"];
+                    break;
+                case iltSCConnectingOnAccepting:
+                    result = [result stringByAppendingFormat:@"%@ : <b>Classification:</b> %@\n", node.name, @"Connecting On Accepting"];
+                    break;
+                case iltSCConnectingOnRefusing:
+                    result = [result stringByAppendingFormat:@"%@ : <b>Classification:</b> %@\n", node.name, @"Connecting On Refusing"];
+                    break;
+                case iltSCAddingRemoving:
+                    result = [result stringByAppendingFormat:@"%@ : <b>Classification:</b> %@\n", node.name, @"Adding, removing Idle"];
+                    break;
+                case iltSCAddingRemovingPlus:
+                    result = [result stringByAppendingFormat:@"%@ : <b>Classification:</b> %@\n", node.name, @"Adding"];
+                    break;
+                case iltSCAddingRemovingMinus:
+                    result = [result stringByAppendingFormat:@"%@ : <b>Classification:</b> %@\n", node.name, @"Removing"];
+                    break;
+                case iltSCAddingNew:
+                    result = [result stringByAppendingFormat:@"%@ : <b>Classification:</b> %@\n", node.name, @"Adding New"];
+                    break;
+                default:
+                    break;
+            }
+            if (node.stateClassificationScope == iltSSLocal) {
+                result = [result stringByAppendingFormat:@"%@ : <b>Classification Scope:</b> %@\n", node.name, @"Local"];
+            } else {
+                result = [result stringByAppendingFormat:@"%@ : <b>Classification Scope:</b> %@\n", node.name, @"Global"];
+            }
+            
         }
         if ([node isMemberOfClass:[SMStateWithUserMessage class]]) {
             SMStateWithUserMessage *state = (SMStateWithUserMessage *) node;
-            result = [result stringByAppendingFormat:@"%@ : type -> %@\n" , state.name, state.messageTypeDescription];
-            result = [result stringByAppendingFormat:@"%@ : title -> %@\n" , state.name, state.title];
-            result = [result stringByAppendingFormat:@"%@ : messageOsx -> %@\n" , state.name, state.messageOsx];
-            result = [result stringByAppendingFormat:@"%@ : messageIos -> %@\n" , state.name, state.messageIos];
-            result = [result stringByAppendingFormat:@"%@ : helpTitle -> %@\n" , state.name, state.helpTitle];
-            result = [result stringByAppendingFormat:@"%@ : helpResource -> %@\n" , state.name, state.helpResource];
-            result = [result stringByAppendingFormat:@"%@ : suppressId -> %@\n" , state.name, state.suppressId];
-            result = [result stringByAppendingFormat:@"%@ : okTitle -> %@\n" , state.name, state.okTitle];
-            result = [result stringByAppendingFormat:@"%@ : cancelTitle -> %@\n" , state.name, state.cancelTitle];
+            result = [result stringByAppendingFormat:@"%@ : <b>Type:</b> %@\n" , state.name, state.messageTypeDescription];
+            result = [result stringByAppendingFormat:@"%@ : <b>Title:</b>\\n%@\n" , state.name, state.title];
+            result = [result stringByAppendingFormat:@"%@ : <b>MessageOsx:</b>\\n%@\n" , state.name, CorrectLenghtAndCharForString(state.messageOsx, 35)];
+            result = [result stringByAppendingFormat:@"%@ : <b>MessageIos:</b>\\n%@\n" , state.name, CorrectLenghtAndCharForString(state.messageIos, 35)];
+            result = [result stringByAppendingFormat:@"%@ : <b>HelpTitle:</b> %@\n" , state.name, state.helpTitle];
+            result = [result stringByAppendingFormat:@"%@ : <b>HelpResource:</b> %@\n" , state.name, state.helpResource];
+            result = [result stringByAppendingFormat:@"%@ : <b>SuppressId:</b> %@\n" , state.name, state.suppressId];
+            result = [result stringByAppendingFormat:@"%@ : <b>OkTitle:</b> %@\n" , state.name, state.okTitle];
+            result = [result stringByAppendingFormat:@"%@ : <b>CancelTitle:</b> %@\n" , state.name, state.cancelTitle];
         }
     }
     return result;

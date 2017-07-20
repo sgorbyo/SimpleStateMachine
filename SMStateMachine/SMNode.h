@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 #import "SMStateMachineExecuteContext.h"
+#import "iltStateClassification.h"
 
 
 
@@ -17,6 +18,9 @@
 @property(nonatomic, strong, nullable) NSString *umlStateDescription;
 
 @property (nonatomic, nullable, strong) NSMutableDictionary *localProperties;
+
+@property (nonatomic, assign) iltStateClassificationType stateClassificationType;
+@property (nonatomic, assign) iltStateClassificationScope stateClassificationScope;
 
 - (nullable instancetype) initWithName:(nonnull NSString *)name umlStateDescription : (nullable NSString *) umlDescription;
 

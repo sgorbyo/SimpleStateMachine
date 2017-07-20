@@ -15,6 +15,12 @@ typedef NS_ENUM(NSUInteger, ILTMessageType) {
     ILTM_CRITICAL
 };
 
+typedef NS_ENUM(NSUInteger, ILTMessageReturnType) {
+    ILTR_OK,
+    ILTR_HELP,
+    ILTR_CANCEL
+};
+
 @interface SMStateWithUserMessage : SMState
 
 - (nullable instancetype) initWithName:(nonnull NSString *)name
