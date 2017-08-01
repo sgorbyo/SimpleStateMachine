@@ -12,6 +12,15 @@
 NSString *const  StateClassificationTypeKey =  @"StateClassificationTypeKey";
 NSString *const  StateClassificationScopeKey =  @"StateClassificationScopeKey";
 
+NSString *const  AssistantOsxMessagesKey =  @"AssistantOsxMessages";
+NSString *const  AssistantOsxSubMessageKey =  @"AssistantOsxSubMessage";
+NSString *const  AssistantOsxMessageTypeKey =  @"AssistantOsxMessageType";
+
+NSString *const  AssistantIosMessagesKey =  @"AssistantIosMessages";
+NSString *const  AssistantIosSubMessageKey =  @"AssistantIosSubMessage";
+NSString *const  AssistantIosMessageTypeKey =  @"AssistantIosMessageType";
+
+
 @interface SMNode()
 @property(strong, nonatomic) NSMutableArray *transitions;
 @end
@@ -120,6 +129,24 @@ NSString *const  StateClassificationScopeKey =  @"StateClassificationScopeKey";
         } else if ([transition.event isEqualToString:@"touch"]) {
             arrowType = @"-[#DarkSeaGreen,bold]->";
             arrowColor = @"<color:DarkSeaGreen>";
+        } else if ([transition.event isEqualToString:@"cmdTouch"]) {
+            arrowType = @"-[#BlueViolet,bold]->";
+            arrowColor = @"<color:BlueViolet >";
+        } else if ([transition.event isEqualToString:@"userChooseOk"]) {
+            arrowType = @"-[#green,bold]->";
+            arrowColor = @"<color:green >";
+        } else if ([transition.event isEqualToString:@"userChooseCancel"]) {
+            arrowType = @"-[#red,bold]->";
+            arrowColor = @"<color:red >";
+        } else if ([transition.event isEqualToString:@"userChooseVideo"]) {
+            arrowType = @"-[#BlueViolet,bold]->";
+            arrowColor = @"<color:BlueViolet >";
+        } else if ([transition.event isEqualToString:@"userCloseVideo"]) {
+            arrowType = @"-[#green,bold]->";
+            arrowColor = @"<color:green >";
+        } else if ([transition.event isEqualToString:@"_default_"]) {
+            arrowType = @"-[#black,bold]->";
+            arrowColor = @"<color:black >";
         } else if ([transition.event isEqualToString:@"doubleTouch"]) {
             arrowType = @"-[#Darkorange,bold]->";
             arrowColor = @"<color:Darkorange>";
@@ -130,6 +157,66 @@ NSString *const  StateClassificationScopeKey =  @"StateClassificationScopeKey";
         result = [result stringByAppendingFormat:@"%@ %@ %@ : %@%@\n", transition.from.name, arrowType, transition.to.name ?: transition.from.name, arrowColor, transition.event];
     }
     return result;
+}
+
+- (NSArray *) assistantOsxMessages {
+    return self.localProperties[AssistantOsxMessagesKey];
+}
+
+- (void) setAssistantOsxMessages:(NSArray<NSString *> *)assistantOsxMessages {
+    [self willChangeValueForKey:@"assistantOsxMessages"];
+    self.localProperties[AssistantOsxMessagesKey] = [assistantOsxMessages copy];
+    [self didChangeValueForKey:@"assistantOsxMessages"];
+}
+
+- (NSString *) assistantOsxSubMessage {
+    return self.localProperties[AssistantOsxSubMessageKey];
+}
+
+- (void) setAssistantOsxSubMessage:(NSString *)assistantOsxSubMessage {
+    [self willChangeValueForKey:@"assistantOsxSubMessage"];
+    self.localProperties[AssistantOsxSubMessageKey] = [assistantOsxSubMessage copy];
+    [self didChangeValueForKey:@"assistantOsxSubMessage"];
+}
+
+- (NSNumber *) assistantOsxMessageType {
+    return self.localProperties[AssistantOsxMessageTypeKey];
+}
+
+- (void) setAssistantOsxMessageType:(NSNumber *)assistantOsxMessageType {
+    [self willChangeValueForKey:@"assistantOsxMessageType"];
+    self.localProperties[AssistantOsxMessageTypeKey] = [assistantOsxMessageType copy];
+    [self didChangeValueForKey:@"assistantOsxMessageType"];
+}
+
+- (NSArray *) assistantIosMessages {
+    return self.localProperties[AssistantIosMessagesKey];
+}
+
+- (void) setAssistantIosMessages:(NSArray<NSString *> *)assistantIosMessages {
+    [self willChangeValueForKey:@"assistantIosMessages"];
+    self.localProperties[AssistantIosMessagesKey] = [assistantIosMessages copy];
+    [self didChangeValueForKey:@"assistantIosMessages"];
+}
+
+- (NSString *) assistantIosSubMessage {
+    return self.localProperties[AssistantIosSubMessageKey];
+}
+
+- (void) setAssistantIosSubMessage:(NSString *)assistantIosSubMessage {
+    [self willChangeValueForKey:@"assistantIosSubMessage"];
+    self.localProperties[AssistantIosSubMessageKey] = [assistantIosSubMessage copy];
+    [self didChangeValueForKey:@"assistantIosSubMessage"];
+}
+
+- (NSNumber *) assistantIosMessageType {
+    return self.localProperties[AssistantIosMessageTypeKey];
+}
+
+- (void) setAssistantIosMessageType:(NSNumber *)assistantIosMessageType {
+    [self willChangeValueForKey:@"assistantIosMessageType"];
+    self.localProperties[AssistantIosMessageTypeKey] = [assistantIosMessageType copy];
+    [self didChangeValueForKey:@"assistantIosMessageType"];
 }
 
 

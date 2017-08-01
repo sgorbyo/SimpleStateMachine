@@ -80,6 +80,8 @@
 
 - (void)validate;
 
+@property (nonatomic, nullable, strong) NSString *stateMachineName;
+
 - (nullable NSString *) plantUml;
 - (nullable NSMutableDictionary *) statesTreeFrom: (nullable NSString *) parent;
 

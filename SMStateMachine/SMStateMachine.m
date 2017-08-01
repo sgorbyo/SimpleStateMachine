@@ -303,6 +303,7 @@ NSString *CorrectLenghtAndCharForString(NSString *string, NSUInteger len) {
             
         }
         if ([node isMemberOfClass:[SMStateWithUserMessage class]]) {
+            result = [result stringByAppendingFormat:@"%@ : ..Messages..\n" , node.name];
             SMStateWithUserMessage *state = (SMStateWithUserMessage *) node;
             result = [result stringByAppendingFormat:@"%@ : <b>Type:</b> %@\n" , state.name, state.messageTypeDescription];
             result = [result stringByAppendingFormat:@"%@ : <b>Title:</b>\\n%@\n" , state.name, state.title];
@@ -313,6 +314,37 @@ NSString *CorrectLenghtAndCharForString(NSString *string, NSUInteger len) {
             result = [result stringByAppendingFormat:@"%@ : <b>SuppressId:</b> %@\n" , state.name, state.suppressId];
             result = [result stringByAppendingFormat:@"%@ : <b>OkTitle:</b> %@\n" , state.name, state.okTitle];
             result = [result stringByAppendingFormat:@"%@ : <b>CancelTitle:</b> %@\n" , state.name, state.cancelTitle];
+        }
+        if (!!node.assistantOsxMessageType || (!!node.assistantOsxMessages && node.assistantOsxMessages.count > 0) || !!node.assistantOsxSubMessage) {
+            result = [result stringByAppendingFormat:@"%@ : ..OS X Assistant..\n" , node.name];
+        }
+        if (!!node.assistantOsxMessages && node.assistantOsxMessages.count > 0) {
+            for (int j = 0; j < node.assistantOsxMessages.count; j++) {
+                NSString *message = node.assistantOsxMessages[j];
+                result = [result stringByAppendingFormat:@"%@ : <b>(%d):</b> %@\n" , node.name, j, CorrectLenghtAndCharForString(message, 35)];
+            }
+        }
+        if (!!node.assistantOsxSubMessage) {
+            result = [result stringByAppendingFormat:@"%@ : <b>SubMessage:</b> %@\n" , node.name, CorrectLenghtAndCharForString(node.assistantOsxSubMessage, 35)];
+        }
+        if (!!node.assistantOsxMessageType) {
+            result = [result stringByAppendingFormat:@"%@ : <b>Type:</b> %@\n" , node.name, node.assistantOsxMessageType];
+        }
+        
+        if (!!node.assistantIosMessageType || (!!node.assistantIosMessages && node.assistantIosMessages.count > 0) || !!node.assistantIosSubMessage) {
+            result = [result stringByAppendingFormat:@"%@ : ..OS X Assistant..\n" , node.name];
+        }
+        if (!!node.assistantIosMessages && node.assistantIosMessages.count > 0) {
+            for (int j = 0; j < node.assistantIosMessages.count; j++) {
+                NSString *message = node.assistantIosMessages[j];
+                result = [result stringByAppendingFormat:@"%@ : <b>(%d):</b> %@\n" , node.name, j, CorrectLenghtAndCharForString(message, 35)];
+            }
+        }
+        if (!!node.assistantIosSubMessage) {
+            result = [result stringByAppendingFormat:@"%@ : <b>SubMessage:</b> %@\n" , node.name, CorrectLenghtAndCharForString(node.assistantIosSubMessage, 35)];
+        }
+        if (!!node.assistantIosMessageType) {
+            result = [result stringByAppendingFormat:@"%@ : <b>Type:</b> %@\n" , node.name, node.assistantIosMessageType];
         }
     }
     return result;
@@ -331,6 +363,10 @@ NSString *CorrectLenghtAndCharForString(NSString *string, NSUInteger len) {
     result = [result stringByAppendingString:@"\tskinparam StateFontName Arial\n"];
     result = [result stringByAppendingString:@"\tskinparam stateFontColor<<Decision>> Red\n"];
     result = [result stringByAppendingString:@"\tskinparam stateFontColor Black\n"];
+    
+    if (self.stateMachineName.length > 0) {
+        result = [result stringByAppendingFormat:@"title **%@**\n", self.stateMachineName];
+    }
     
     result = [result stringByAppendingFormat:@"[*] --> %@\n", self.initialState.name];
     

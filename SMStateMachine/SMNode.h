@@ -9,8 +9,6 @@
 #import "SMStateMachineExecuteContext.h"
 #import "iltStateClassification.h"
 
-
-
 @interface SMNode : NSObject
 @property(nonatomic, readonly, strong, nonnull) NSString *name;
 @property(nonatomic, weak, nullable) SMNode *parent;
@@ -32,5 +30,12 @@
 - (nullable SMTransition *)_getTransitionForEvent:(nonnull NSString *)event;
 
 - (nullable NSString *) transitionsPlantuml;
+
+@property(nonatomic, nullable) NSArray <NSString *> *assistantOsxMessages;
+@property(nonatomic, nullable) NSString *assistantOsxSubMessage;
+@property(nonatomic, nullable) NSNumber *assistantOsxMessageType;
+@property(nonatomic, nullable) NSArray <NSString *> *assistantIosMessages;
+@property(nonatomic, nullable) NSString *assistantIosSubMessage;
+@property(nonatomic, nullable) NSNumber *assistantIosMessageType;
 
 @end
