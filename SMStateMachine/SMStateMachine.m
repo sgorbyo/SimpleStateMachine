@@ -1,4 +1,3 @@
-
 #import "SMStateMachine.h"
 
 
@@ -315,36 +314,25 @@ NSString *CorrectLenghtAndCharForString(NSString *string, NSUInteger len) {
             result = [result stringByAppendingFormat:@"%@ : <b>OkTitle:</b> %@\n" , state.name, state.okTitle];
             result = [result stringByAppendingFormat:@"%@ : <b>CancelTitle:</b> %@\n" , state.name, state.cancelTitle];
         }
-        if (!!node.assistantOsxMessageType || (!!node.assistantOsxMessages && node.assistantOsxMessages.count > 0) || !!node.assistantOsxSubMessage) {
-            result = [result stringByAppendingFormat:@"%@ : ..OS X Assistant..\n" , node.name];
-        }
-        if (!!node.assistantOsxMessages && node.assistantOsxMessages.count > 0) {
-            for (int j = 0; j < node.assistantOsxMessages.count; j++) {
-                NSString *message = node.assistantOsxMessages[j];
-                result = [result stringByAppendingFormat:@"%@ : <b>(%d):</b> %@\n" , node.name, j, CorrectLenghtAndCharForString(message, 35)];
-            }
-        }
-        if (!!node.assistantOsxSubMessage) {
-            result = [result stringByAppendingFormat:@"%@ : <b>SubMessage:</b> %@\n" , node.name, CorrectLenghtAndCharForString(node.assistantOsxSubMessage, 35)];
-        }
-        if (!!node.assistantOsxMessageType) {
-            result = [result stringByAppendingFormat:@"%@ : <b>Type:</b> %@\n" , node.name, node.assistantOsxMessageType];
+        if (!!node.assistantOsxMessageType || (!!node.assistantOsxMessage && node.assistantOsxMessage.length > 0) || !!node.assistantOsxSubMessage) {
+            result = [result stringByAppendingFormat:@"%@ : <b>OS X Assistant:</b> %@\n" , node.name, CorrectLenghtAndCharForString(node.assistantOsxMessage, 35)];
         }
         
-        if (!!node.assistantIosMessageType || (!!node.assistantIosMessages && node.assistantIosMessages.count > 0) || !!node.assistantIosSubMessage) {
-            result = [result stringByAppendingFormat:@"%@ : ..OS X Assistant..\n" , node.name];
+        if (!!node.assistantOsxSubMessage) {
+            result = [result stringByAppendingFormat:@"%@ : <b>OS X SubMessage:</b> %@\n" , node.name, CorrectLenghtAndCharForString(node.assistantOsxSubMessage, 35)];
         }
-        if (!!node.assistantIosMessages && node.assistantIosMessages.count > 0) {
-            for (int j = 0; j < node.assistantIosMessages.count; j++) {
-                NSString *message = node.assistantIosMessages[j];
-                result = [result stringByAppendingFormat:@"%@ : <b>(%d):</b> %@\n" , node.name, j, CorrectLenghtAndCharForString(message, 35)];
-            }
+        if (!!node.assistantOsxMessageType) {
+            result = [result stringByAppendingFormat:@"%@ : <b>OS XType:</b> %@\n" , node.name, node.assistantOsxMessageType];
+        }
+        
+        if (!!node.assistantIosMessageType || (!!node.assistantIosMessage && node.assistantIosMessage.length > 0) || !!node.assistantIosSubMessage) {
+            result = [result stringByAppendingFormat:@"%@ : <b>iOS Assistant:</b> %@\n" , node.name, CorrectLenghtAndCharForString(node.assistantIosMessage, 35)];
         }
         if (!!node.assistantIosSubMessage) {
-            result = [result stringByAppendingFormat:@"%@ : <b>SubMessage:</b> %@\n" , node.name, CorrectLenghtAndCharForString(node.assistantIosSubMessage, 35)];
+            result = [result stringByAppendingFormat:@"%@ : <b>iOS SubMessage:</b> %@\n" , node.name, CorrectLenghtAndCharForString(node.assistantIosSubMessage, 35)];
         }
         if (!!node.assistantIosMessageType) {
-            result = [result stringByAppendingFormat:@"%@ : <b>Type:</b> %@\n" , node.name, node.assistantIosMessageType];
+            result = [result stringByAppendingFormat:@"%@ : <b>iOS Type:</b> %@\n" , node.name, node.assistantIosMessageType];
         }
     }
     return result;

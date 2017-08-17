@@ -1,7 +1,7 @@
 //
 // Created by est1908 on 11/20/12.
 //
-// To change the template use AppCode | Preferences | File Templates.
+// To change the template use AppCode | Preferences | File Templates
 //
 
 
@@ -12,11 +12,11 @@
 NSString *const  StateClassificationTypeKey =  @"StateClassificationTypeKey";
 NSString *const  StateClassificationScopeKey =  @"StateClassificationScopeKey";
 
-NSString *const  AssistantOsxMessagesKey =  @"AssistantOsxMessages";
+NSString *const  AssistantOsxMessageKey =  @"AssistantOsxMessage";
 NSString *const  AssistantOsxSubMessageKey =  @"AssistantOsxSubMessage";
 NSString *const  AssistantOsxMessageTypeKey =  @"AssistantOsxMessageType";
 
-NSString *const  AssistantIosMessagesKey =  @"AssistantIosMessages";
+NSString *const  AssistantIosMessageKey =  @"AssistantIosMessage";
 NSString *const  AssistantIosSubMessageKey =  @"AssistantIosSubMessage";
 NSString *const  AssistantIosMessageTypeKey =  @"AssistantIosMessageType";
 
@@ -159,14 +159,14 @@ NSString *const  AssistantIosMessageTypeKey =  @"AssistantIosMessageType";
     return result;
 }
 
-- (NSArray *) assistantOsxMessages {
-    return self.localProperties[AssistantOsxMessagesKey];
+- (NSString *) assistantOsxMessage {
+    return self.localProperties[AssistantOsxMessageKey];
 }
 
-- (void) setAssistantOsxMessages:(NSArray<NSString *> *)assistantOsxMessages {
-    [self willChangeValueForKey:@"assistantOsxMessages"];
-    self.localProperties[AssistantOsxMessagesKey] = [assistantOsxMessages copy];
-    [self didChangeValueForKey:@"assistantOsxMessages"];
+- (void) setAssistantOsxMessage:(NSString *)assistantOsxMessage {
+    [self willChangeValueForKey:@"assistantOsxMessage"];
+    self.localProperties[AssistantOsxMessageKey] = [assistantOsxMessage copy];
+    [self didChangeValueForKey:@"assistantOsxMessage"];
 }
 
 - (NSString *) assistantOsxSubMessage {
@@ -189,13 +189,13 @@ NSString *const  AssistantIosMessageTypeKey =  @"AssistantIosMessageType";
     [self didChangeValueForKey:@"assistantOsxMessageType"];
 }
 
-- (NSArray *) assistantIosMessages {
-    return self.localProperties[AssistantIosMessagesKey];
+- (NSArray *) assistantIosMessage {
+    return self.localProperties[AssistantIosMessageKey];
 }
 
-- (void) setAssistantIosMessages:(NSArray<NSString *> *)assistantIosMessages {
+- (void) setAssistantIosMessage:(NSString *)assistantIosMessage {
     [self willChangeValueForKey:@"assistantIosMessages"];
-    self.localProperties[AssistantIosMessagesKey] = [assistantIosMessages copy];
+    self.localProperties[AssistantIosMessageKey] = [assistantIosMessage copy];
     [self didChangeValueForKey:@"assistantIosMessages"];
 }
 

@@ -1,7 +1,7 @@
 //
 //  Created by est1908 on 8/24/12.
 //
-// To change the template use AppCode | Preferences | File Templates.
+// To change the template use AppCode | Preferences | File Templates
 //
 
 

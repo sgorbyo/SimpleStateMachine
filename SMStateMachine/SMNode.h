@@ -1,7 +1,7 @@
 //
 // Created by est1908 on 11/20/12.
 //
-// To change the template use AppCode | Preferences | File Templates.
+// To change the template use AppCode | Preferences | File Templates
 //
 
 
@@ -31,10 +31,10 @@
 
 - (nullable NSString *) transitionsPlantuml;
 
-@property(nonatomic, nullable) NSArray <NSString *> *assistantOsxMessages;
+@property(nonatomic, nullable) NSString *assistantOsxMessage;
 @property(nonatomic, nullable) NSString *assistantOsxSubMessage;
 @property(nonatomic, nullable) NSNumber *assistantOsxMessageType;
-@property(nonatomic, nullable) NSArray <NSString *> *assistantIosMessages;
+@property(nonatomic, nullable) NSString *assistantIosMessage;
 @property(nonatomic, nullable) NSString *assistantIosSubMessage;
 @property(nonatomic, nullable) NSNumber *assistantIosMessageType;
 

@@ -3,7 +3,7 @@
 //  iGenogram
 //
 //  Created by Danilo Marinucci on 13/07/17.
-//  Copyright © 2017 iLogoTec. All rights reserved.
+//  Copyright © 2017 iLogoTec. All rights reserved
 //
 
 #import "SMStateWithUserMessage.h"

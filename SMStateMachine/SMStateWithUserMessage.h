@@ -3,7 +3,7 @@
 //  iGenogram
 //
 //  Created by Danilo Marinucci on 13/07/17.
-//  Copyright © 2017 iLogoTec. All rights reserved.
+//  Copyright © 2017 iLogoTec. All rights reserved
 //
 
 #import "SMState.h"
@@ -12,7 +12,8 @@ typedef NS_ENUM(NSUInteger, ILTMessageType) {
     ILTM_NONE,
     ILTM_WARNING,
     ILTM_INFORMATION,
-    ILTM_CRITICAL
+    ILTM_CRITICAL,
+    ILTM_VIDEO
 };
 
 typedef NS_ENUM(NSUInteger, ILTMessageReturnType) {
