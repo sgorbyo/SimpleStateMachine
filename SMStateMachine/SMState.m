@@ -27,6 +27,9 @@
     if ([context.monitor respondsToSelector:@selector(receiveEvent:forState:foundTransition:)]) {
         [context.monitor receiveEvent:event forState:self foundTransition:curTr];
     }
+    if ([context.monitor respondsToSelector:@selector(stateMachine:receiveEvent:forState:foundTransition:)]) {
+        [context.monitor stateMachine:context.stateMachine receiveEvent:event forState:self foundTransition:curTr];
+    }
     if (curTr != nil) {
         const BOOL shouldChangeStates = (nil != curTr.to);
         
