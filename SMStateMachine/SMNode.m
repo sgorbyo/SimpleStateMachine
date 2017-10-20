@@ -15,10 +15,12 @@ NSString *const  StateClassificationScopeKey =  @"StateClassificationScopeKey";
 NSString *const  AssistantOsxMessageKey =  @"AssistantOsxMessage";
 NSString *const  AssistantOsxSubMessageKey =  @"AssistantOsxSubMessage";
 NSString *const  AssistantOsxMessageTypeKey =  @"AssistantOsxMessageType";
+NSString *const  AssistantOsxHelpAnchorKey =  @"AssistantOsxHelpAnchor";
 
 NSString *const  AssistantIosMessageKey =  @"AssistantIosMessage";
 NSString *const  AssistantIosSubMessageKey =  @"AssistantIosSubMessage";
 NSString *const  AssistantIosMessageTypeKey =  @"AssistantIosMessageType";
+NSString *const  AssistantIosHelpAnchorKey =  @"AssistantIosHelpAnchor";
 
 
 @interface SMNode()
@@ -189,6 +191,16 @@ NSString *const  AssistantIosMessageTypeKey =  @"AssistantIosMessageType";
     [self didChangeValueForKey:@"assistantOsxMessageType"];
 }
 
+- (NSString *) assistantOsxHelpAnchor {
+    return self.localProperties[AssistantOsxHelpAnchorKey];
+}
+
+- (void) setAssistantOsxHelpAnchor:(NSString *)assistantOsxHelpAnchor {
+    [self willChangeValueForKey:@"assistantOsxHelpAnchor"];
+    self.localProperties[AssistantOsxHelpAnchorKey] = [assistantOsxHelpAnchor copy];
+    [self didChangeValueForKey:@"assistantOsxHelpAnchor"];
+}
+
 - (NSArray *) assistantIosMessage {
     return self.localProperties[AssistantIosMessageKey];
 }
@@ -219,5 +231,12 @@ NSString *const  AssistantIosMessageTypeKey =  @"AssistantIosMessageType";
     [self didChangeValueForKey:@"assistantIosMessageType"];
 }
 
+- (NSString *) assistantIosHelpAnchor {
+    return self.localProperties[AssistantIosHelpAnchorKey];
+}
+
+- (void) setAssistantIosHelpAnchor:(NSString *)assistantIosHelpAnchor {
+    
+}
 
 @end

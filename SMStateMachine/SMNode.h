@@ -34,8 +34,10 @@
 @property(nonatomic, nullable) NSString *assistantOsxMessage;
 @property(nonatomic, nullable) NSString *assistantOsxSubMessage;
 @property(nonatomic, nullable) NSNumber *assistantOsxMessageType;
+@property(nonatomic, nullable) NSString *assistantOsxHelpAnchor;
 @property(nonatomic, nullable) NSString *assistantIosMessage;
 @property(nonatomic, nullable) NSString *assistantIosSubMessage;
 @property(nonatomic, nullable) NSNumber *assistantIosMessageType;
+@property(nonatomic, nullable) NSString *assistantIosHelpAnchor;
 
 @end

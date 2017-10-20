@@ -321,6 +321,9 @@ NSString *CorrectLenghtAndCharForString(NSString *string, NSUInteger len) {
         if (!!node.assistantOsxSubMessage) {
             result = [result stringByAppendingFormat:@"%@ : <b>OS X SubMessage:</b> %@\n" , node.name, CorrectLenghtAndCharForString(node.assistantOsxSubMessage, 35)];
         }
+        if (!!node.assistantOsxHelpAnchor) {
+            result = [result stringByAppendingFormat:@"%@ : <b>OS X HelpAnchor:</b> %@\n" , node.name, CorrectLenghtAndCharForString(node.assistantOsxHelpAnchor, 35)];
+        }
         if (!!node.assistantOsxMessageType) {
             result = [result stringByAppendingFormat:@"%@ : <b>OS XType:</b> %@\n" , node.name, node.assistantOsxMessageType];
         }
@@ -330,6 +333,9 @@ NSString *CorrectLenghtAndCharForString(NSString *string, NSUInteger len) {
         }
         if (!!node.assistantIosSubMessage) {
             result = [result stringByAppendingFormat:@"%@ : <b>iOS SubMessage:</b> %@\n" , node.name, CorrectLenghtAndCharForString(node.assistantIosSubMessage, 35)];
+        }
+        if (!!node.assistantIosHelpAnchor) {
+            result = [result stringByAppendingFormat:@"%@ : <b>iOS HelpAnchor:</b> %@\n" , node.name, CorrectLenghtAndCharForString(node.assistantIosHelpAnchor, 35)];
         }
         if (!!node.assistantIosMessageType) {
             result = [result stringByAppendingFormat:@"%@ : <b>iOS Type:</b> %@\n" , node.name, node.assistantIosMessageType];
