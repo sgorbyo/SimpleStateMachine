@@ -181,8 +181,8 @@ NSString *CorrectLenghtAndCharForString(NSString *string, NSUInteger len) {
 }
 
 -(NSString *)createUuid{
-    CFUUIDRef uuid = CFUUIDCreate(kCFAllocatorDefault);
-    NSString * res= (__bridge NSString *) (CFUUIDCreateString(kCFAllocatorDefault, uuid));
+    NSUUID *uuid = [NSUUID UUID];
+    NSString * res= uuid.UUIDString;
     return res;
 }
 
