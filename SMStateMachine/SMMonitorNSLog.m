@@ -7,11 +7,9 @@
 
 #import "SMMonitorNSLog.h"
 
-
 @interface SMMonitorNSLog()
 
 @end
-
 
 @implementation SMMonitorNSLog
 
