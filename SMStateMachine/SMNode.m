@@ -236,7 +236,9 @@ NSString *const  AssistantIosHelpAnchorKey =  @"AssistantIosHelpAnchor";
 }
 
 - (void) setAssistantIosHelpAnchor:(NSString *)assistantIosHelpAnchor {
-    
+    [self willChangeValueForKey:@"AssistantIosHelpAnchorKey"];
+    self.localProperties[AssistantIosHelpAnchorKey] = [assistantIosHelpAnchor copy];
+    [self didChangeValueForKey:@"AssistantIosHelpAnchorKey"];
 }
 
 @end
