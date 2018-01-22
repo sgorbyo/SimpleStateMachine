@@ -12,7 +12,67 @@
 @implementation SMState
 
 @synthesize entry = _entry;
-@synthesize exit = _exit;
+@synthesize exit = _exit; 
+
+- (instancetype)initAssistantStateWithName:(nonnull NSString *)name
+                       umlStateDescription:(nullable NSString *)umlStateDescription
+                             operationType:(IGenogramOperation)operationType
+                                osxMessage:(nullable NSString *)osxMessage
+                                iosMessage:(nullable NSString *)iosMessage
+                             osxHelpAnchor:(nullable NSString *)osxHelpAnchor
+                             iosHelpAnchor:(nullable NSString *)iosHelpAnchor
+                          osxAssistantType:(SMStateAssistantOptions)osxAssistantType
+                          iosAssistantType:(SMStateAssistantOptions)iosAssistantType {
+    self = [super initWithName:name
+           umlStateDescription:umlStateDescription
+                 operationType:operationType
+               stateCursorType:SMStateCursorTypeNone
+              stateCursorScope:SMStateCursorScopeNone
+                assistantClear:NO];
+    if (!self) {
+        return nil;
+    }
+    self.messageType = SMMessageTypeAssistant;
+    self.osxMessage = osxMessage;
+    self.iosMessage = iosMessage;
+    self.osxHelpAnchor = osxHelpAnchor;
+    self.iosHelpAnchor = iosHelpAnchor;
+    self.osxAssistantOptions = osxAssistantType;
+    self.iosAssistantOptions = iosAssistantType;
+
+    return self;
+}
+
+- (instancetype)initMessageBoxStateWithName:(nonnull NSString *)name
+                        umlStateDescription:(nullable NSString *)umlStateDescription
+                              operationType:(IGenogramOperation)operationType
+                                 osxMessage:(nullable NSString *)osxMessage
+                                 iosMessage:(nullable NSString *)iosMessage
+                              osxHelpAnchor:(nullable NSString *)osxHelpAnchor
+                              iosHelpAnchor:(nullable NSString *)iosHelpAnchor
+                                    okTitle:(nullable NSString *)okTitle
+                                cancelTitle:(nullable NSString *)cancelTitle
+                                 suppressId:(nullable NSString *)suppressId {
+    self = [super initWithName:name
+           umlStateDescription:umlStateDescription
+                 operationType:operationType
+               stateCursorType:SMStateCursorTypeNone
+              stateCursorScope:SMStateCursorScopeNone
+                assistantClear:NO];
+    if (!self) {
+        return nil;
+    }
+
+    self.osxMessage = osxMessage;
+    self.iosMessage = iosMessage;
+    self.osxHelpAnchor = osxHelpAnchor;
+    self.iosHelpAnchor = iosHelpAnchor;
+    self.okTitle = okTitle;
+    self.cancelTitle = cancelTitle;
+    self.suppressId = suppressId;
+    return self;
+}
+
 
 - (void) setEntryBlock:(SMActionBlock)entryBlock {
     self.entry = [SMAction actionWithBlock:entryBlock];

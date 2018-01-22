@@ -31,7 +31,6 @@
 
 #import <Foundation/Foundation.h>
 #import "SMState.h"
-#import "SMStateWithUserMessage.h"
 #import "SMAction.h"
 #import "SMTransition.h"
 #import "SMDecision.h"
@@ -39,6 +38,10 @@
 #define SMDEFAULT @"_default_"
 
 
+/**
+ This is a modified version of the original SMStateMachine. it contains special states adapted to the need of iGenogram so states are available to display message box and activate an Assistant.
+ Furthermore the support for blocks has been added for transitions and enter/exit states and as documentation tool the production of UmlPlant State Chart is supported.
+ */
 @interface SMStateMachine : NSObject
 
 /**
@@ -46,22 +49,90 @@
  */
 @property (nonatomic, strong, nullable) dispatch_queue_t serialQueue;
 
-- (nullable SMState *) createState:(nonnull NSString *)name umlStateDescription: (nullable NSString *) umlStateDescription;
 
-- (nullable SMStateWithUserMessage *)createStateWithUserMessage:(nonnull NSString *)name
-                                            umlStateDescription: (nullable NSString *) umlStateDescription
-                                                    messageType: (ILTMessageType) messageType
-                                                          title: (nullable NSString *) title
-                                                     messageOsx: (nullable NSString *) messageOsx
-                                                     messageIos: (nullable NSString *) messageIos
-                                                      helpTitle: (nullable NSString *) helpTitle
-                                                   helpResource: (nullable NSString *) helpResource
-                                                     suppressId: (nullable NSString *) suppressId
-                                                        okTitle: (nullable NSString *) okTitle
-                                                    cancelTitle: (nullable NSString *) cancelTitle;
+/**
+ An ordinary (no Messagebox or Asistant) state is created, added to the FSM and returned.
 
-- (nullable SMDecision *)createDecision:(nonnull NSString *)name umlStateDescription: (nullable NSString *) umlStateDescription withPredicateBoolBlock:(nullable SMBoolDecisionBlock)block;
-- (nullable SMDecision *)createDecision:(nonnull NSString *)name umlStateDescription: (nullable NSString *) umlStateDescription withPredicateBlock:(nullable SMDecisionBlock)block;
+ @see IGenogramOperation
+ 
+ @param name Used internally to identify the state. Usually, as a conventions, it has assigned the same name of the corresponding SMState* variable.
+ @param umlStateDescription Describes the state in the PlantUML diagram.
+ @param operationType Operation group. Each state participate of a group devoted to a particular operation (i.e. Adding Individual, Deleting Relationship, etc..) and it is useful to group states using the same color in PlantUML Diagram and to dispay a title in Assistant States using a decode function.
+ @param stateCursorType <#stateCursorType description#>
+ @param stateCursorScope <#stateCursorScope description#>
+ @param assistantClear <#assistantClear description#>
+ @return <#return value description#>
+ */
+- (nullable SMState *) createState:(nonnull NSString *)name
+               umlStateDescription: (nullable NSString *) umlStateDescription
+                     operationType:(IGenogramOperation) operationType
+                   stateCursorType:(SMStateCursorType) stateCursorType
+                  stateCursorScope:(SMStateCursorScope) stateCursorScope
+                    assistantClear:(BOOL) assistantClear;
+
+- (nullable SMState *)createAssistantStateWithName:(nonnull NSString *)name
+                              umlStateDescription : (nullable NSString *) umlStateDescription
+                                     operationType: (IGenogramOperation) operationType
+                                   stateCursorType:(SMStateCursorType) stateCursorType
+                                  stateCursorScope:(SMStateCursorScope) stateCursorScope
+                                        osxMessage: (nullable NSString *) osxMessage
+                                        iosMessage: (nullable NSString *) iosMessage
+                                     osxHelpAnchor: (nullable NSString *) osxHelpAnchor
+                                     iosHelpAnchor: (nullable NSString *) iosHelpAnchor
+                                  osxAssistantType: (SMStateAssistantOptions) osxAssistantType
+                                  iosAssistantType: (SMStateAssistantOptions) iosAssistantType;
+
+- (nullable SMState *)createAssistantStateWithName:(nonnull NSString *)name
+                              umlStateDescription : (nullable NSString *) umlStateDescription
+                                     operationType: (IGenogramOperation) operationType
+                                   stateCursorType:(SMStateCursorType) stateCursorType
+                                  stateCursorScope:(SMStateCursorScope) stateCursorScope
+                                        osxMessage: (nullable NSString *) osxMessage
+                                        iosMessage: (nullable NSString *) iosMessage
+                                     osxHelpAnchor: (nullable NSString *) osxHelpAnchor
+                                     iosHelpAnchor: (nullable NSString *) iosHelpAnchor
+                                  osxAssistantType: (SMStateAssistantOptions) osxAssistantType
+                                  iosAssistantType: (SMStateAssistantOptions) iosAssistantType
+                                            parent: (nullable SMState *) parent;
+
+- (nullable SMState *)createMessageBoxStateWithName:(nonnull NSString *)name
+                               umlStateDescription : (nullable NSString *) umlStateDescription
+                                      operationType: (IGenogramOperation) operationType
+                                        messageType: (SMMessageType) messageType
+                                         osxMessage: (nullable NSString *) osxMessage
+                                 osxInformativeText: (nullable NSString *) osxInformativeText
+                                         iosMessage: (nullable NSString *) iosMessage
+                                 iosInformativeText: (nullable NSString *) iosInformativeText
+                                      osxHelpAnchor: (nullable NSString *) osxHelpAnchor
+                                      iosHelpAnchor: (nullable NSString *) iosHelpAnchor
+                                            okTitle: (nullable NSString *) okTitle
+                                        cancelTitle: (nullable NSString *) cancelTitle
+                                         suppressId: (nullable NSString *) suppressId
+                                             parent: (nullable SMState *) parent;
+
+- (nullable SMState *)createMessageBoxStateWithName:(nonnull NSString *)name
+                               umlStateDescription : (nullable NSString *) umlStateDescription
+                                      operationType: (IGenogramOperation) operationType
+                                        messageType: (SMMessageType) messageType
+                                         osxMessage: (nullable NSString *) osxMessage
+                                 osxInformativeText: (nullable NSString *) osxInformativeText
+                                         iosMessage: (nullable NSString *) iosMessage
+                                 iosInformativeText: (nullable NSString *) iosInformativeText
+                                      osxHelpAnchor: (nullable NSString *) osxHelpAnchor
+                                      iosHelpAnchor: (nullable NSString *) iosHelpAnchor
+                                            okTitle: (nullable NSString *) okTitle
+                                        cancelTitle: (nullable NSString *) cancelTitle
+                                         suppressId: (nullable NSString *) suppressId;
+
+- (nullable SMDecision *)createDecision:(nonnull NSString *)name
+                    umlStateDescription: (nullable NSString *) umlStateDescription
+                          operationType: (IGenogramOperation) operationType
+                 withPredicateBoolBlock:(nullable SMBoolDecisionBlock)block;
+
+- (nullable SMDecision *)createDecision:(nonnull NSString *)name
+                    umlStateDescription: (nullable NSString *) umlStateDescription
+                          operationType: (IGenogramOperation) operationType
+                     withPredicateBlock:(nullable SMDecisionBlock)block;
 
 - (void)transitionFrom:(nonnull SMNode *)fromState to:(nonnull SMNode *)toState forEvent:(nonnull NSString *)event;
 - (void)transitionFrom:(nonnull SMNode *)fromState to:(nonnull SMNode *)toState forEvent:(nonnull NSString *)event withBlock:(nullable SMActionBlock) actionBlock;

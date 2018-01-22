@@ -18,7 +18,15 @@ typedef NSString * _Nullable (^SMDecisionBlock)(NSDictionary * _Nullable piggyba
 @interface SMDecision : SMNode
 
 @property (strong, nonatomic, nullable) SMDecisionBlock block;
-- (nullable instancetype) initWithName:(nonnull NSString *)name umlStateDescription: (nullable NSString *) umlStateDescription andBlock:(SMDecisionBlock _Nullable )block;
-- (nullable instancetype) initWithName:(nonnull NSString *)name umlStateDescription: (nullable NSString *) umlStateDescription andBoolBlock:(SMBoolDecisionBlock _Nullable )block;
+
+- (nullable instancetype) initWithName:(nonnull NSString *)name
+                   umlStateDescription: (nullable NSString *) umlStateDescription
+                         operationType: (IGenogramOperation) operationType
+                              andBlock:(SMDecisionBlock _Nullable )block;
+
+- (nullable instancetype) initWithName:(nonnull NSString *)name
+                   umlStateDescription: (nullable NSString *) umlStateDescription
+                         operationType: (IGenogramOperation) operationType
+                          andBoolBlock:(SMBoolDecisionBlock _Nullable )block;
 
 @end

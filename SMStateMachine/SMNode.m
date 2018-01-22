@@ -9,20 +9,6 @@
 #import "SMTransition.h"
 #import "SMStateMachine.h"
 
-NSString *const  StateClassificationTypeKey =  @"StateClassificationTypeKey";
-NSString *const  StateClassificationScopeKey =  @"StateClassificationScopeKey";
-
-NSString *const  AssistantOsxMessageKey =  @"AssistantOsxMessage";
-NSString *const  AssistantOsxSubMessageKey =  @"AssistantOsxSubMessage";
-NSString *const  AssistantOsxMessageTypeKey =  @"AssistantOsxMessageType";
-NSString *const  AssistantOsxHelpAnchorKey =  @"AssistantOsxHelpAnchor";
-
-NSString *const  AssistantIosMessageKey =  @"AssistantIosMessage";
-NSString *const  AssistantIosSubMessageKey =  @"AssistantIosSubMessage";
-NSString *const  AssistantIosMessageTypeKey =  @"AssistantIosMessageType";
-NSString *const  AssistantIosHelpAnchorKey =  @"AssistantIosHelpAnchor";
-
-
 @interface SMNode()
 @property(strong, nonatomic) NSMutableArray *transitions;
 @end
@@ -32,12 +18,23 @@ NSString *const  AssistantIosHelpAnchorKey =  @"AssistantIosHelpAnchor";
 @synthesize transitions = _transitions;
 @synthesize parent = _parent;
 
-- (instancetype) initWithName:(nonnull NSString *)name umlStateDescription:(nullable NSString *)umlStateDescription{
+- (instancetype) initWithName:(NSString *)name
+          umlStateDescription:(NSString *)umlStateDescription
+                operationType:(IGenogramOperation)operationType
+              stateCursorType:(SMStateCursorType)stateCursorType
+             stateCursorScope:(SMStateCursorScope)stateCursorScope
+               assistantClear:(BOOL)assistantClear{
+
     self = [super init];
     if (self) {
         _name = name;
         _localProperties = [NSMutableDictionary new];
         _umlStateDescription = umlStateDescription;
+        _operationType = operationType;
+        _stateCursorType = stateCursorType;
+        _stateCursorScope = stateCursorScope;
+        _messageType = assistantClear ? SMMessageTypeAssistant : SMMessageTypeNone;
+        _osxAssistantOptions = assistantClear ? SMStateAssistantOptionsRemoveAssistant : SMStateAssistantOptionsNoButtons;
     }
     return self;
 }
@@ -83,35 +80,117 @@ NSString *const  AssistantIosHelpAnchorKey =  @"AssistantIosHelpAnchor";
     return _transitions;
 }
 
-- (void) setStateClassificationType:(iltStateClassificationType)stateClassificationType {
-    self.localProperties[StateClassificationTypeKey] = @(stateClassificationType);
-}
+#pragma mark - Operations Classification and Description
 
-- (iltStateClassificationType) stateClassificationType {
-    if (!self.localProperties[StateClassificationTypeKey]) {
-        self.localProperties[StateClassificationTypeKey] = @(iltSCNone);
+- (NSString *) osxTitle {
+    switch (self.operationType) {
+        case IGenogramOperationUndefined:
+            return @"UNASSIGNED OPERATION!";
+            break;
+        case IGenogramOperationIdle:
+            return @"IDLE!";
+            break;
+        case IGenogramOperationAddHousehold:
+            return NSLocalizedString(@"Adding group/household", nil);
+            break;
+        case IGenogramOperationEditHouseholdComponents:
+            return NSLocalizedString(@"Modifyng group/household members", nil);
+            break;
+        case IGenogramOperationAddIndividual:
+            return NSLocalizedString(@"Adding a new individual", nil);
+            break;
+        case IGenogramOperationMoveIndividual:
+            return NSLocalizedString(@"Moving an individual", nil);
+            break;
+        case IGenogramOperationAddRelationship:
+            return NSLocalizedString(@"Adding an emotional relationship", nil);
+            break;
+        case IGenogramOperationAddCouple:
+            return NSLocalizedString(@"Adding a couple relationship", nil);
+            break;
+        case IGenogramOperationMoveCouple:
+            return NSLocalizedString(@"Moving a couple relationship", nil);
+            break;
+        case IGenogramOperationAddBirthAdoption:
+            return NSLocalizedString(@"Adding a parents/child relationship", nil);
+            break;
+        case IGenogramOperationAddTwin:
+            return NSLocalizedString(@"Adding a twin to a parents/child relationship", nil);
+            break;
+        case IGenogramOperationAddingObject:
+            return @"ADDING_OBJECT!";
+            break;
+        case IGenogramOperationEditingObject:
+            return @"EDITING_OBJECT!";
+            break;
+        case IGenogramOperationAddingTwin:
+            return @"ADDING_TWIN!";
+            break;
+        default:
+            return @"UNKNOWN!";
     }
-    NSNumber *number = self.localProperties[StateClassificationTypeKey];
-    return number.unsignedIntegerValue;
 }
 
-- (void) setStateClassificationScope:(iltStateClassificationScope)stateClassificationScope {
-    self.localProperties[StateClassificationScopeKey] = @(stateClassificationScope);
+- (NSString *) iosTitle {
+    return self.osxTitle;
 }
 
-- (iltStateClassificationScope) stateClassificationScope {
-    if (!self.localProperties[StateClassificationScopeKey]) {
-        self.localProperties[StateClassificationScopeKey] = @(iltSSIndifferent);
+- (NSString *)operationTypeCode {
+    switch (self.operationType) {
+        case IGenogramOperationUndefined:
+            return @"UNA";
+            break;
+        case IGenogramOperationIdle:
+            return @"IDL";
+            break;
+        case IGenogramOperationAddHousehold:
+            return @"HHL_ADD";
+            break;
+        case IGenogramOperationEditHouseholdComponents:
+            return @"HHL_EDT_COM";
+            break;
+        case IGenogramOperationAddIndividual:
+            return @"IND_ADD";
+            break;
+        case IGenogramOperationMoveIndividual:
+            return @"IND_MOV";
+            break;
+        case IGenogramOperationAddRelationship:
+            return @"REL_ADD";
+            break;
+        case IGenogramOperationAddCouple:
+            return @"CPL_ADD";
+            break;
+        case IGenogramOperationMoveCouple:
+            return @"CPL_MOV";
+            break;
+        case IGenogramOperationAddBirthAdoption:
+            return @"BAD_ADD";
+            break;
+        case IGenogramOperationAddTwin:
+            return @"BAD_ADD_TWN";
+            break;
+        case IGenogramOperationAddingObject:
+            return @"MVI_ADD_OBJ";
+            break;
+        case IGenogramOperationEditingObject:
+            return @"MVI_EDT_OBJ";
+            break;
+        case IGenogramOperationAddingTwin:
+            return @"MVI_ADD_TWN";
+            break;
+        default:
+            return @"UNK";
     }
-    NSNumber *number = self.localProperties[StateClassificationScopeKey];
-    return number.unsignedIntegerValue;
 }
 
+#pragma mark - PlantUml service functions
 
 - (NSString *) transitionsPlantuml {
     NSString *result = @"";
     NSString *arrowType = nil;
     NSString *arrowColor = nil;
+
     for (SMTransition *transition in self.transitions) {
         if ([transition.event isEqualToString:@"SM_TRUE"]) {
             arrowType = @"-[#green,bold]->";
@@ -161,84 +240,73 @@ NSString *const  AssistantIosHelpAnchorKey =  @"AssistantIosHelpAnchor";
     return result;
 }
 
-- (NSString *) assistantOsxMessage {
-    return self.localProperties[AssistantOsxMessageKey];
+- (NSString *)stateColor {
+    switch (self.operationType) {
+        case IGenogramOperationUndefined:
+            return @"Fuchsia";
+            break;
+        case IGenogramOperationIdle:
+            return @"GreenYellow";
+            break;
+        case IGenogramOperationAddHousehold:
+            return @"Azure";
+            break;
+        case IGenogramOperationEditHouseholdComponents:
+            return @"Gold";
+            break;
+        case IGenogramOperationAddIndividual:
+            return @"Azure";
+            break;
+        case IGenogramOperationMoveIndividual:
+            return @"Yellow";
+            break;
+        case IGenogramOperationAddRelationship:
+            return @"Salmon";
+            break;
+        case IGenogramOperationAddCouple:
+            return @"Azure";
+            break;
+        case IGenogramOperationMoveCouple:
+            return @"Yellow";
+            break;
+        case IGenogramOperationAddBirthAdoption:
+            return @"Azure";
+            break;
+        case IGenogramOperationAddTwin:
+            return @"Orange";
+            break;
+        case IGenogramOperationAddingObject:
+            return @"Azure";
+            break;
+        case IGenogramOperationEditingObject:
+            return @"Gold";
+            break;
+        case IGenogramOperationAddingTwin:
+            return @"Orange";
+            break;
+        default:
+            return @"DeepPink";
+    }
 }
 
-- (void) setAssistantOsxMessage:(NSString *)assistantOsxMessage {
-    [self willChangeValueForKey:@"assistantOsxMessage"];
-    self.localProperties[AssistantOsxMessageKey] = [assistantOsxMessage copy];
-    [self didChangeValueForKey:@"assistantOsxMessage"];
-}
-
-- (NSString *) assistantOsxSubMessage {
-    return self.localProperties[AssistantOsxSubMessageKey];
-}
-
-- (void) setAssistantOsxSubMessage:(NSString *)assistantOsxSubMessage {
-    [self willChangeValueForKey:@"assistantOsxSubMessage"];
-    self.localProperties[AssistantOsxSubMessageKey] = [assistantOsxSubMessage copy];
-    [self didChangeValueForKey:@"assistantOsxSubMessage"];
-}
-
-- (NSNumber *) assistantOsxMessageType {
-    return self.localProperties[AssistantOsxMessageTypeKey];
-}
-
-- (void) setAssistantOsxMessageType:(NSNumber *)assistantOsxMessageType {
-    [self willChangeValueForKey:@"assistantOsxMessageType"];
-    self.localProperties[AssistantOsxMessageTypeKey] = [assistantOsxMessageType copy];
-    [self didChangeValueForKey:@"assistantOsxMessageType"];
-}
-
-- (NSString *) assistantOsxHelpAnchor {
-    return self.localProperties[AssistantOsxHelpAnchorKey];
-}
-
-- (void) setAssistantOsxHelpAnchor:(NSString *)assistantOsxHelpAnchor {
-    [self willChangeValueForKey:@"assistantOsxHelpAnchor"];
-    self.localProperties[AssistantOsxHelpAnchorKey] = [assistantOsxHelpAnchor copy];
-    [self didChangeValueForKey:@"assistantOsxHelpAnchor"];
-}
-
-- (NSArray *) assistantIosMessage {
-    return self.localProperties[AssistantIosMessageKey];
-}
-
-- (void) setAssistantIosMessage:(NSString *)assistantIosMessage {
-    [self willChangeValueForKey:@"assistantIosMessages"];
-    self.localProperties[AssistantIosMessageKey] = [assistantIosMessage copy];
-    [self didChangeValueForKey:@"assistantIosMessages"];
-}
-
-- (NSString *) assistantIosSubMessage {
-    return self.localProperties[AssistantIosSubMessageKey];
-}
-
-- (void) setAssistantIosSubMessage:(NSString *)assistantIosSubMessage {
-    [self willChangeValueForKey:@"assistantIosSubMessage"];
-    self.localProperties[AssistantIosSubMessageKey] = [assistantIosSubMessage copy];
-    [self didChangeValueForKey:@"assistantIosSubMessage"];
-}
-
-- (NSNumber *) assistantIosMessageType {
-    return self.localProperties[AssistantIosMessageTypeKey];
-}
-
-- (void) setAssistantIosMessageType:(NSNumber *)assistantIosMessageType {
-    [self willChangeValueForKey:@"assistantIosMessageType"];
-    self.localProperties[AssistantIosMessageTypeKey] = [assistantIosMessageType copy];
-    [self didChangeValueForKey:@"assistantIosMessageType"];
-}
-
-- (NSString *) assistantIosHelpAnchor {
-    return self.localProperties[AssistantIosHelpAnchorKey];
-}
-
-- (void) setAssistantIosHelpAnchor:(NSString *)assistantIosHelpAnchor {
-    [self willChangeValueForKey:@"AssistantIosHelpAnchorKey"];
-    self.localProperties[AssistantIosHelpAnchorKey] = [assistantIosHelpAnchor copy];
-    [self didChangeValueForKey:@"AssistantIosHelpAnchorKey"];
+- (NSString *) messageTypeDescription {
+    switch (self.messageType) {
+        case SMMessageTypeInformation:
+            return @"MessageBox Information";
+            break;
+        case SMMessageTypeCritical:
+            return @"MessageBox Critical";
+            break;
+        case SMMessageTypeWarning:
+            return @"MessageBox Warning";
+            break;
+        case SMMessageTypeAssistant:
+            return @"Assistant";
+            break;
+        default:
+            return @"No Message";
+            break;
+    }
 }
 
 @end

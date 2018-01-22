@@ -14,20 +14,36 @@
 @synthesize block = _block;
 
 
-- (instancetype) initWithName:(NSString *)name umlStateDescription:(nullable NSString *)umlStateDescription andBlock:(SMDecisionBlock)block {
-    self = [super initWithName:name umlStateDescription:umlStateDescription];
+- (instancetype) initWithName:(NSString *)name
+          umlStateDescription:(nullable NSString *)umlStateDescription
+                operationType: (IGenogramOperation) operationType
+                     andBlock:(SMDecisionBlock)block {
+    self = [super initWithName:name
+           umlStateDescription:umlStateDescription
+                 operationType:operationType
+               stateCursorType:SMStateCursorTypeNone
+              stateCursorScope:SMStateCursorScopeNone
+                assistantClear:NO];
     if (self) {
         _block = block;
     }
     return self;
 }
 
-- (id)initWithName:(NSString *)name umlStateDescription:(nullable NSString *)umlStateDescription andBoolBlock:(SMBoolDecisionBlock)block {
-    self = [super initWithName:name umlStateDescription:umlStateDescription];
+- (instancetype)initWithName:(NSString *)name
+         umlStateDescription:(nullable NSString *)umlStateDescription
+               operationType: (IGenogramOperation) operationType
+                andBoolBlock:(SMBoolDecisionBlock)block {
+    self = [super initWithName:name
+           umlStateDescription:umlStateDescription
+                 operationType:operationType
+               stateCursorType:SMStateCursorTypeNone
+              stateCursorScope:SMStateCursorScopeNone
+                assistantClear:NO];
     if (self) {
         _block = ^(NSDictionary *piggyback){
-          BOOL res = block(piggyback);
-          return res ? SM_EVENT_TRUE : SM_EVENT_FALSE;
+            BOOL res = block(piggyback);
+            return res ? SM_EVENT_TRUE : SM_EVENT_FALSE;
         };
     }
     return self;

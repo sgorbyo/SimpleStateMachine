@@ -47,47 +47,162 @@ NSString *CorrectLenghtAndCharForString(NSString *string, NSUInteger len) {
     return [self.states copy];
 }
 
-- (SMState *)createState:(NSString *)name umlStateDescription:(nullable NSString *)umlStateDescription {
-    SMState *state = [[SMState alloc] initWithName:name umlStateDescription:umlStateDescription];
+- (SMState *) createState:(NSString *)name
+      umlStateDescription:(nullable NSString *)umlStateDescription
+            operationType:(IGenogramOperation)operationType
+          stateCursorType:(SMStateCursorType)stateCursorType
+         stateCursorScope:(SMStateCursorScope)stateCursorScope
+           assistantClear:(BOOL)assistantClear {
+    SMState *state = [[SMState alloc] initWithName:name
+                               umlStateDescription:umlStateDescription
+                                     operationType:operationType
+                                   stateCursorType:stateCursorType
+                                  stateCursorScope:stateCursorScope
+                                    assistantClear:assistantClear];
     [self.states addObject:state];
     return state;
 }
 
-- (nullable SMStateWithUserMessage *)createStateWithUserMessage:(nonnull NSString *)name
-                                            umlStateDescription: (nullable NSString *) umlStateDescription
-                                                    messageType: (ILTMessageType) messageType
-                                                          title: (nullable NSString *) title
-                                                     messageOsx: (nullable NSString *) messageOsx
-                                                     messageIos: (nullable NSString *) messageIos
-                                                      helpTitle: (nullable NSString *) helpTitle
-                                                   helpResource: (nullable NSString *) helpResource
-                                                     suppressId: (nullable NSString *) suppressId
-                                                        okTitle: (nullable NSString *) okTitle
-                                                    cancelTitle: (nullable NSString *) cancelTitle {
+- (nullable SMState *) createAssistantStateWithName:(NSString *)name
+                                umlStateDescription:(NSString *)umlStateDescription
+                                      operationType:(IGenogramOperation)operationType
+                                    stateCursorType:(SMStateCursorType)stateCursorType
+                                   stateCursorScope:(SMStateCursorScope)stateCursorScope
+                                         osxMessage:(NSString *)osxMessage
+                                         iosMessage:(NSString *)iosMessage
+                                      osxHelpAnchor:(NSString *)osxHelpAnchor
+                                      iosHelpAnchor:(NSString *)iosHelpAnchor
+                                   osxAssistantType:(SMStateAssistantOptions)osxAssistantType
+                                   iosAssistantType:(SMStateAssistantOptions)iosAssistantType
+                                             parent:(SMState *)parent {
     
-    SMStateWithUserMessage *state = [[SMStateWithUserMessage alloc] initWithName:name
-                                                             umlStateDescription:umlStateDescription
-                                                                     messageType:messageType
-                                                                           title:title
-                                                                      messageOsx:messageOsx
-                                                                      messageIos:messageIos
-                                                                       helpTitle:helpTitle
-                                                                    helpResource:helpResource
-                                                                      suppressId:suppressId
-                                                                         okTitle:okTitle
-                                                                     cancelTitle:cancelTitle];
+    SMState *state = [[SMState alloc] initAssistantStateWithName:name
+                                             umlStateDescription:umlStateDescription
+                                                   operationType:operationType
+                                                      osxMessage:osxMessage
+                                                      iosMessage:iosMessage
+                                                   osxHelpAnchor:osxHelpAnchor
+                                                   iosHelpAnchor:iosHelpAnchor
+                                                osxAssistantType:osxAssistantType
+                                                iosAssistantType:iosAssistantType];
+    state.stateCursorType = stateCursorType;
+    state.stateCursorScope = stateCursorScope;
+    state.parent = parent;
     [self.states addObject:state];
     return state;
 }
 
-- (SMDecision *)createDecision:(NSString *)name umlStateDescription: (nullable NSString *) umlStateDescription withPredicateBoolBlock:(SMBoolDecisionBlock)block {
-    SMDecision* node = [[SMDecision alloc] initWithName:name umlStateDescription: umlStateDescription andBoolBlock:block];
+- (nullable SMState *) createAssistantStateWithName:(NSString *)name
+                                umlStateDescription:(NSString *)umlStateDescription
+                                      operationType:(IGenogramOperation)operationType
+                                    stateCursorType:(SMStateCursorType)stateCursorType
+                                   stateCursorScope:(SMStateCursorScope)stateCursorScope
+                                         osxMessage:(NSString *)osxMessage
+                                         iosMessage:(NSString *)iosMessage
+                                      osxHelpAnchor:(NSString *)osxHelpAnchor
+                                      iosHelpAnchor:(NSString *)iosHelpAnchor
+                                   osxAssistantType:(SMStateAssistantOptions)osxAssistantType
+                                   iosAssistantType:(SMStateAssistantOptions)iosAssistantType {
+    
+    return [self createAssistantStateWithName:name
+                          umlStateDescription:umlStateDescription
+                                operationType:operationType
+                              stateCursorType:stateCursorType
+                             stateCursorScope:stateCursorScope
+                                   osxMessage:osxMessage
+                                   iosMessage:iosMessage
+                                osxHelpAnchor:osxHelpAnchor
+                                iosHelpAnchor:iosHelpAnchor
+                             osxAssistantType:osxAssistantType
+                             iosAssistantType:iosAssistantType
+                                       parent:nil];
+}
+
+- (SMState *)createMessageBoxStateWithName:(NSString *)name
+                       umlStateDescription:(NSString *)umlStateDescription
+                             operationType:(IGenogramOperation)operationType
+                               messageType:(SMMessageType) messageType
+                                osxMessage:(NSString *)osxMessage
+                        osxInformativeText:(NSString *)osxInformativeText
+                                iosMessage:(NSString *)iosMessage
+                        iosInformativeText:(NSString *)iosInformativeText
+                             osxHelpAnchor:(NSString *)osxHelpAnchor
+                             iosHelpAnchor:(NSString *)iosHelpAnchor
+                                   okTitle:(NSString *)okTitle
+                               cancelTitle:(NSString *)cancelTitle
+                                suppressId:(NSString *)suppressId
+                                    parent:(SMState *)parent {
+    
+    SMState *state = [[SMState alloc] initMessageBoxStateWithName:name
+                                              umlStateDescription:umlStateDescription
+                                                    operationType:operationType
+                                                       osxMessage:osxMessage
+                                                       iosMessage:iosMessage
+                                                    osxHelpAnchor:osxHelpAnchor
+                                                    iosHelpAnchor:iosHelpAnchor
+                                                          okTitle:okTitle
+                                                      cancelTitle:cancelTitle
+                                                       suppressId:suppressId];
+    state.messageType = messageType;
+    state.iosInformativeText = iosInformativeText;
+    state.osxInformativeText = osxInformativeText;
+    state.parent = parent;
+    [self.states addObject:state];
+    return state;
+}
+
+- (SMState *)createMessageBoxStateWithName:(NSString *)name
+                       umlStateDescription:(NSString *)umlStateDescription
+                             operationType:(IGenogramOperation)operationType
+                               messageType:(SMMessageType) messageType
+                                osxMessage:(NSString *)osxMessage
+                        osxInformativeText:(NSString *)osxInformativeText
+                                iosMessage:(NSString *)iosMessage
+                        iosInformativeText:(NSString *)iosInformativeText
+                             osxHelpAnchor:(NSString *)osxHelpAnchor
+                             iosHelpAnchor:(NSString *)iosHelpAnchor
+                                   okTitle:(NSString *)okTitle
+                               cancelTitle:(NSString *)cancelTitle
+                                suppressId:(NSString *)suppressId {
+    
+    return [self createMessageBoxStateWithName:name
+                           umlStateDescription:umlStateDescription
+                                 operationType:operationType
+                                   messageType:messageType
+                                    osxMessage:osxMessage
+                            osxInformativeText:osxInformativeText
+                                    iosMessage:iosMessage
+                            iosInformativeText:iosInformativeText
+                                 osxHelpAnchor:osxHelpAnchor
+                                 iosHelpAnchor:iosHelpAnchor
+                                       okTitle:okTitle
+                                   cancelTitle:cancelTitle
+                                    suppressId:suppressId
+                                        parent:nil];
+}
+
+- (SMDecision *) createDecision:(NSString *)name
+            umlStateDescription: (nullable NSString *) umlStateDescription
+                  operationType: (IGenogramOperation) operationType
+         withPredicateBoolBlock:(SMBoolDecisionBlock)block {
+
+    SMDecision* node = [[SMDecision alloc] initWithName:name
+                                    umlStateDescription: umlStateDescription
+                                          operationType:operationType
+                                           andBoolBlock:block];
     [self.states addObject:node];
     return node;
 }
 
-- (SMDecision *)createDecision:(NSString *)name umlStateDescription: (nullable NSString *) umlStateDescription withPredicateBlock:(SMDecisionBlock)block {
-    SMDecision* node = [[SMDecision alloc] initWithName:name umlStateDescription: umlStateDescription andBlock:block];
+- (SMDecision *)createDecision:(NSString *)name
+           umlStateDescription: (nullable NSString *) umlStateDescription
+                 operationType: (IGenogramOperation) operationType
+            withPredicateBlock:(SMDecisionBlock)block {
+
+    SMDecision* node = [[SMDecision alloc] initWithName:name
+                                    umlStateDescription: umlStateDescription
+                                          operationType:operationType
+                                               andBlock:block];
     [self.states addObject:node];
     return node;
 }
@@ -246,7 +361,7 @@ NSString *CorrectLenghtAndCharForString(NSString *string, NSUInteger len) {
             if ([node isMemberOfClass:[SMDecision class]]) {
                 result = [result stringByAppendingFormat:@"state %@<<Decision>>\n", node.name];
             } else {
-                result = [result stringByAppendingFormat:@"state %@\n", node.name];
+                result = [result stringByAppendingFormat:@"state %@ %@ \n", node.name, node.stateColor ? [NSString stringWithFormat:@"#%@", node.stateColor] : @""];
             }
         }
     }
@@ -259,86 +374,81 @@ NSString *CorrectLenghtAndCharForString(NSString *string, NSUInteger len) {
         if (node.umlStateDescription) {
             result = [result stringByAppendingFormat:@"%@ : %@\n", node.name, CorrectLenghtAndCharForString(node.umlStateDescription, 35)];
         }
-        if (node.stateClassificationType != iltSCNone) {
-            switch (node.stateClassificationType) {
-                case iltSCNormal:
-                    result = [result stringByAppendingFormat:@"%@ : <b>Classification:</b> %@\n", node.name, @"Normal"];
+        if (node.stateCursorType != SMStateCursorTypeNone) {
+            switch (node.stateCursorType) {
+                case SMStateCursorTypeNormal:
+                    result = [result stringByAppendingFormat:@"%@ : <b>Cursor type:</b> %@\n", node.name, @"Normal"];
                     break;
-                case iltSCMovable:
-                    result = [result stringByAppendingFormat:@"%@ : <b>Classification:</b> %@\n", node.name, @"Moveable"];
+                case SMStateCursorTypeMovable:
+                    result = [result stringByAppendingFormat:@"%@ : <b>Cursor type:</b> %@\n", node.name, @"Moveable"];
                     break;
-                case iltSCMoving:
-                    result = [result stringByAppendingFormat:@"%@ : <b>Classification:</b> %@\n", node.name, @"Moving"];
+                case SMStateCursorTypeMoving:
+                    result = [result stringByAppendingFormat:@"%@ : <b>Cursor type:</b> %@\n", node.name, @"Moving"];
                     break;
-                case iltSCConnectingOnSpace:
-                    result = [result stringByAppendingFormat:@"%@ : <b>Classification:</b> %@\n", node.name, @"Connecting On Space"];
+                case SMStateCursorTypeConnectingOnSpace:
+                    result = [result stringByAppendingFormat:@"%@ : <b>Cursor type:</b> %@\n", node.name, @"Connecting On Space"];
                     break;
-                case iltSCConnectingOnAccepting:
-                    result = [result stringByAppendingFormat:@"%@ : <b>Classification:</b> %@\n", node.name, @"Connecting On Accepting"];
+                case SMStateCursorTypeConnectingOnAccepting:
+                    result = [result stringByAppendingFormat:@"%@ : <b>Cursor type:</b> %@\n", node.name, @"Connecting On Accepting"];
                     break;
-                case iltSCConnectingOnRefusing:
-                    result = [result stringByAppendingFormat:@"%@ : <b>Classification:</b> %@\n", node.name, @"Connecting On Refusing"];
+                case SMStateCursorTypeConnectingOnRefusing:
+                    result = [result stringByAppendingFormat:@"%@ : <b>Cursor type:</b> %@\n", node.name, @"Connecting On Refusing"];
                     break;
-                case iltSCAddingRemoving:
-                    result = [result stringByAppendingFormat:@"%@ : <b>Classification:</b> %@\n", node.name, @"Adding, removing Idle"];
+                case SMStateCursorTypeAddingRemoving:
+                    result = [result stringByAppendingFormat:@"%@ : <b>Cursor type:</b> %@\n", node.name, @"Adding, removing Idle"];
                     break;
-                case iltSCAddingRemovingPlus:
-                    result = [result stringByAppendingFormat:@"%@ : <b>Classification:</b> %@\n", node.name, @"Adding"];
+                case SMStateCursorTypeAddingRemovingPlus:
+                    result = [result stringByAppendingFormat:@"%@ : <b>Cursor type:</b> %@\n", node.name, @"Adding"];
                     break;
-                case iltSCAddingRemovingMinus:
-                    result = [result stringByAppendingFormat:@"%@ : <b>Classification:</b> %@\n", node.name, @"Removing"];
+                case SMStateCursorTypeAddingRemovingMinus:
+                    result = [result stringByAppendingFormat:@"%@ : <b>Cursor type:</b> %@\n", node.name, @"Removing"];
                     break;
-                case iltSCAddingNew:
-                    result = [result stringByAppendingFormat:@"%@ : <b>Classification:</b> %@\n", node.name, @"Adding New"];
+                case SMStateCursorTypeAddingNew:
+                    result = [result stringByAppendingFormat:@"%@ : <b>Cursor type:</b> %@\n", node.name, @"Adding New"];
                     break;
                 default:
                     break;
             }
-            if (node.stateClassificationScope == iltSSLocal) {
-                result = [result stringByAppendingFormat:@"%@ : <b>Classification Scope:</b> %@\n", node.name, @"Local"];
+            if (node.stateCursorScope == SMStateCursorScopeLocal) {
+                result = [result stringByAppendingFormat:@"%@ : <b>Cursor Scope:</b> %@\n", node.name, @"Local"];
             } else {
-                result = [result stringByAppendingFormat:@"%@ : <b>Classification Scope:</b> %@\n", node.name, @"Global"];
+                result = [result stringByAppendingFormat:@"%@ : <b>Cursor Scope:</b> %@\n", node.name, @"Global"];
             }
             
         }
-        if ([node isMemberOfClass:[SMStateWithUserMessage class]]) {
-            result = [result stringByAppendingFormat:@"%@ : ..Messages..\n" , node.name];
-            SMStateWithUserMessage *state = (SMStateWithUserMessage *) node;
-            result = [result stringByAppendingFormat:@"%@ : <b>Type:</b> %@\n" , state.name, state.messageTypeDescription];
-            result = [result stringByAppendingFormat:@"%@ : <b>Title:</b>\\n%@\n" , state.name, state.title];
-            result = [result stringByAppendingFormat:@"%@ : <b>MessageOsx:</b>\\n%@\n" , state.name, CorrectLenghtAndCharForString(state.messageOsx, 35)];
-            result = [result stringByAppendingFormat:@"%@ : <b>MessageIos:</b>\\n%@\n" , state.name, CorrectLenghtAndCharForString(state.messageIos, 35)];
-            result = [result stringByAppendingFormat:@"%@ : <b>HelpTitle:</b> %@\n" , state.name, state.helpTitle];
-            result = [result stringByAppendingFormat:@"%@ : <b>HelpResource:</b> %@\n" , state.name, state.helpResource];
-            result = [result stringByAppendingFormat:@"%@ : <b>SuppressId:</b> %@\n" , state.name, state.suppressId];
-            result = [result stringByAppendingFormat:@"%@ : <b>OkTitle:</b> %@\n" , state.name, state.okTitle];
-            result = [result stringByAppendingFormat:@"%@ : <b>CancelTitle:</b> %@\n" , state.name, state.cancelTitle];
+        if (node.messageType != SMMessageTypeNone) {
+            result = [result stringByAppendingFormat:@"%@ : %@\n" , node.name, node.messageTypeDescription];
+            result = [result stringByAppendingFormat:@"%@ : <b>Type:</b> %@\n" , node.name, node.messageTypeDescription];
+            result = [result stringByAppendingFormat:@"%@ : <b>Osx Operation:</b>\\n%@\n" , node.name, node.osxTitle];
+            result = [result stringByAppendingFormat:@"%@ : <b>Ios Operation:</b>\\n%@\n" , node.name, node.iosTitle];
+            result = [result stringByAppendingFormat:@"%@ : <b>MessageOsx:</b>\\n%@\n" , node.name, CorrectLenghtAndCharForString(node.osxMessage, 35)];
+            result = [result stringByAppendingFormat:@"%@ : <b>InformativeTextOsx:</b>\\n%@\n" , node.name, CorrectLenghtAndCharForString(node.osxInformativeText, 35)];
+            result = [result stringByAppendingFormat:@"%@ : <b>OsxHelpAnchor:</b> %@\n" , node.name, node.osxHelpAnchor];
+            result = [result stringByAppendingFormat:@"%@ : <b>MessageIos:</b>\\n%@\n" , node.name, CorrectLenghtAndCharForString(node.iosMessage, 35)];
+            result = [result stringByAppendingFormat:@"%@ : <b>InformativeTextIos:</b>\\n%@\n" , node.name, CorrectLenghtAndCharForString(node.iosInformativeText, 35)];
+            result = [result stringByAppendingFormat:@"%@ : <b>IosHelpAnchor:</b> %@\n" , node.name, node.iosHelpAnchor];
+            
+            if (node.messageType != SMMessageTypeAssistant) {
+                result = [result stringByAppendingFormat:@"%@ : <b>SuppressId:</b> %@\n" , node.name, node.suppressId];
+                result = [result stringByAppendingFormat:@"%@ : <b>OkTitle:</b> %@\n" , node.name, node.okTitle];
+                result = [result stringByAppendingFormat:@"%@ : <b>CancelTitle:</b> %@\n" , node.name, node.cancelTitle];
+            } else {
+                if (node.osxAssistantOptions & SMStateAssistantOptionsOkButton) {
+                    result = [result stringByAppendingFormat:@"%@ : <b>Osx OK Button</b>\n" , node.name];
+                }
+                if (node.iosAssistantOptions & SMStateAssistantOptionsOkButton) {
+                    result = [result stringByAppendingFormat:@"%@ : <b>Ios OK Button</b>\n" , node.name];
+                }
+                if (node.osxAssistantOptions & SMStateAssistantOptionsCancelButton) {
+                    result = [result stringByAppendingFormat:@"%@ : <b>Osx CANCEL Button</b>\n" , node.name];
+                }
+                if (node.iosAssistantOptions & SMStateAssistantOptionsCancelButton) {
+                    result = [result stringByAppendingFormat:@"%@ : <b>Ios CANCEL Button</b>\n" , node.name];
+                }
+            }
         }
-        if (!!node.assistantOsxMessageType || (!!node.assistantOsxMessage && node.assistantOsxMessage.length > 0) || !!node.assistantOsxSubMessage) {
-            result = [result stringByAppendingFormat:@"%@ : <b>OS X Assistant:</b> %@\n" , node.name, CorrectLenghtAndCharForString(node.assistantOsxMessage, 35)];
-        }
-        
-        if (!!node.assistantOsxSubMessage) {
-            result = [result stringByAppendingFormat:@"%@ : <b>OS X SubMessage:</b> %@\n" , node.name, CorrectLenghtAndCharForString(node.assistantOsxSubMessage, 35)];
-        }
-        if (!!node.assistantOsxHelpAnchor) {
-            result = [result stringByAppendingFormat:@"%@ : <b>OS X HelpAnchor:</b> %@\n" , node.name, CorrectLenghtAndCharForString(node.assistantOsxHelpAnchor, 35)];
-        }
-        if (!!node.assistantOsxMessageType) {
-            result = [result stringByAppendingFormat:@"%@ : <b>OS XType:</b> %@\n" , node.name, node.assistantOsxMessageType];
-        }
-        
-        if (!!node.assistantIosMessageType || (!!node.assistantIosMessage && node.assistantIosMessage.length > 0) || !!node.assistantIosSubMessage) {
-            result = [result stringByAppendingFormat:@"%@ : <b>iOS Assistant:</b> %@\n" , node.name, CorrectLenghtAndCharForString(node.assistantIosMessage, 35)];
-        }
-        if (!!node.assistantIosSubMessage) {
-            result = [result stringByAppendingFormat:@"%@ : <b>iOS SubMessage:</b> %@\n" , node.name, CorrectLenghtAndCharForString(node.assistantIosSubMessage, 35)];
-        }
-        if (!!node.assistantIosHelpAnchor) {
-            result = [result stringByAppendingFormat:@"%@ : <b>iOS HelpAnchor:</b> %@\n" , node.name, CorrectLenghtAndCharForString(node.assistantIosHelpAnchor, 35)];
-        }
-        if (!!node.assistantIosMessageType) {
-            result = [result stringByAppendingFormat:@"%@ : <b>iOS Type:</b> %@\n" , node.name, node.assistantIosMessageType];
+        if (node.osxAssistantOptions & SMStateAssistantOptionsRemoveAssistant) {
+            result = [result stringByAppendingFormat:@"%@ : <b>Clear Assistant Area</b>\n" , node.name];
         }
     }
     return result;

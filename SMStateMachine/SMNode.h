@@ -11,33 +11,66 @@
 
 @interface SMNode : NSObject
 @property(nonatomic, readonly, strong, nonnull) NSString *name;
+
 @property(nonatomic, weak, nullable) SMNode *parent;
-
-@property(nonatomic, strong, nullable) NSString *umlStateDescription;
-
 @property (nonatomic, nullable, strong) NSMutableDictionary *localProperties;
 
-@property (nonatomic, assign) iltStateClassificationType stateClassificationType;
-@property (nonatomic, assign) iltStateClassificationScope stateClassificationScope;
+#pragma mark - Operations Classification and Description
+@property(nonatomic, assign) IGenogramOperation operationType;
+@property(nonatomic, nonnull, readonly) NSString *operationTypeCode;
+@property(nonatomic, nonnull, readonly) NSString *osxTitle;
+@property(nonatomic, nonnull, readonly) NSString *iosTitle;
 
-- (nullable instancetype) initWithName:(nonnull NSString *)name umlStateDescription : (nullable NSString *) umlDescription;
+@property (nonatomic, assign) SMMessageType messageType;
 
-- (void)_postEvent:(nonnull NSString *)event withContext:(nullable SMStateMachineExecuteContext *)context withPiggyback: (nullable NSDictionary *) piggyback;
-- (void)_entryWithContext:(nullable SMStateMachineExecuteContext *)context withPiggyback: (nullable NSDictionary *) piggyback;
-- (void)_exitWithContext:(nullable SMStateMachineExecuteContext *)context withPiggyback: (nullable NSDictionary *) piggyback;
+@property(nonatomic, nullable, strong) NSString *osxMessage;
+@property(nonatomic, nullable, strong) NSString *osxInformativeText;
+@property(nonatomic, assign) SMStateAssistantOptions osxAssistantOptions;
+@property(nonatomic, nullable, strong) NSString *osxHelpAnchor;
+
+@property (nonatomic, assign) SMStateCursorType stateCursorType;
+@property (nonatomic, assign) SMStateCursorScope stateCursorScope;
+
+@property(nonatomic, nullable, strong) NSString *iosMessage;
+@property(nonatomic, nullable, strong) NSString *iosInformativeText;
+@property(nonatomic, assign) SMStateAssistantOptions iosAssistantOptions;
+@property(nonatomic, nullable, strong) NSString *iosHelpAnchor;
+
+@property (nonatomic, nullable, strong) NSString *suppressId;
+@property (nonatomic, nullable, strong) NSString *okTitle;
+@property (nonatomic, nullable, strong) NSString *cancelTitle;
+
+//idle.osxAssistantType = @(AMO_Clear);
+//idle.stateClassificationScope = SMStateCursorTypeNormal;
+//idle.stateClassificationType = SMStateCursorTypeConnectingWaitingStart;
+
+- (nullable instancetype) initWithName:(nonnull NSString *)name
+                  umlStateDescription :(nullable NSString *) umlStateDescription
+                         operationType:(IGenogramOperation) operationType
+                       stateCursorType:(SMStateCursorType) stateCursorType
+                      stateCursorScope:(SMStateCursorScope) stateCursorScope
+                        assistantClear:(BOOL) assistantClear;
+
+- (void)_postEvent:(nonnull NSString *)event
+       withContext:(nullable SMStateMachineExecuteContext *)context
+     withPiggyback: (nullable NSDictionary *) piggyback;
+
+- (void)_entryWithContext:(nullable SMStateMachineExecuteContext *)context
+            withPiggyback: (nullable NSDictionary *) piggyback;
+
+- (void)_exitWithContext:(nullable SMStateMachineExecuteContext *)context
+           withPiggyback: (nullable NSDictionary *) piggyback;
 
 - (void)_addTransition:(nonnull SMTransition *)transition;
+
 - (nullable SMTransition *)_getTransitionForEvent:(nonnull NSString *)event;
 
-- (nullable NSString *) transitionsPlantuml;
+#pragma mark - PlantUml service functions
 
-@property(nonatomic, nullable) NSString *assistantOsxMessage;
-@property(nonatomic, nullable) NSString *assistantOsxSubMessage;
-@property(nonatomic, nullable) NSNumber *assistantOsxMessageType;
-@property(nonatomic, nullable) NSString *assistantOsxHelpAnchor;
-@property(nonatomic, nullable) NSString *assistantIosMessage;
-@property(nonatomic, nullable) NSString *assistantIosSubMessage;
-@property(nonatomic, nullable) NSNumber *assistantIosMessageType;
-@property(nonatomic, nullable) NSString *assistantIosHelpAnchor;
+@property(nonatomic, strong, nullable) NSString *umlStateDescription;
+- (nullable NSString *) transitionsPlantuml;
+@property(nonatomic, nonnull, readonly) NSString *stateColor;
+
+@property (nonatomic, nonnull, readonly) NSString *messageTypeDescription;
 
 @end
