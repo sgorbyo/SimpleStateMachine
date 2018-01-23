@@ -41,6 +41,7 @@
 /**
  This is a modified version of the original SMStateMachine. it contains special states adapted to the need of iGenogram so states are available to display message box and activate an Assistant.
  Furthermore the support for blocks has been added for transitions and enter/exit states and as documentation tool the production of UmlPlant State Chart is supported.
+ It works in conjuction with the GenogramViewController who acts as SMMonitor on all FSM describing the behaviour of each ViewModel and, based on the configuration of the current states activate features like Assistant and messageBox.
  */
 @interface SMStateMachine : NSObject
 
@@ -58,10 +59,10 @@
  @param name Used internally to identify the state. Usually, as a conventions, it has assigned the same name of the corresponding SMState* variable.
  @param umlStateDescription Describes the state in the PlantUML diagram.
  @param operationType Operation group. Each state participate of a group devoted to a particular operation (i.e. Adding Individual, Deleting Relationship, etc..) and it is useful to group states using the same color in PlantUML Diagram and to dispay a title in Assistant States using a decode function.
- @param stateCursorType <#stateCursorType description#>
- @param stateCursorScope <#stateCursorScope description#>
- @param assistantClear <#assistantClear description#>
- @return <#return value description#>
+ @param stateCursorType Define a new cursor
+ @param stateCursorScope Define the scope of the new cursor
+ @param assistantClear If YES then the current session of the Assistant is closed and it goes in "idle state" visualizing help pills o autonomous tips based on its analysis of the current global state.
+ @return The new state
  */
 - (nullable SMState *) createState:(nonnull NSString *)name
                umlStateDescription: (nullable NSString *) umlStateDescription
@@ -70,18 +71,23 @@
                   stateCursorScope:(SMStateCursorScope) stateCursorScope
                     assistantClear:(BOOL) assistantClear;
 
-- (nullable SMState *)createAssistantStateWithName:(nonnull NSString *)name
-                              umlStateDescription : (nullable NSString *) umlStateDescription
-                                     operationType: (IGenogramOperation) operationType
-                                   stateCursorType:(SMStateCursorType) stateCursorType
-                                  stateCursorScope:(SMStateCursorScope) stateCursorScope
-                                        osxMessage: (nullable NSString *) osxMessage
-                                        iosMessage: (nullable NSString *) iosMessage
-                                     osxHelpAnchor: (nullable NSString *) osxHelpAnchor
-                                     iosHelpAnchor: (nullable NSString *) iosHelpAnchor
-                                  osxAssistantType: (SMStateAssistantOptions) osxAssistantType
-                                  iosAssistantType: (SMStateAssistantOptions) iosAssistantType;
+/**
+ Creates a state configured to show a message using the Assistant and adds it to the target SMStateMachine.
 
+ @param name Used internally to identify the state. Usually, as a conventions, it has assigned the same name of the corresponding SMState* variable.
+ @param umlStateDescription Describes the state in the PlantUML diagram.
+ @param operationType Operation group. Each state participate of a group devoted to a particular operation (i.e. Adding Individual, Deleting Relationship, etc..) and it is useful to group states using the same color in PlantUML Diagram and to dispay a title in Assistant States using a decode function.
+ @param stateCursorType Define a new cursor
+ @param stateCursorScope Define the scope of the new cursor
+ @param osxMessage The message shown in the Mac version
+ @param iosMessage The message shown in the iOS version
+ @param osxHelpAnchor The help Anchor for the Mac Version. If this parameter is nil or if it has a zero legth then the help button is not shown in the Assistant
+ @param iosHelpAnchor The help Anchor for the iOS Version. If this parameter is nil or if it has a zero legth then the help button is not shown in the Assistant
+ @param osxAssistantType Defines, for the Mac version, the options related to the Assistant buttons configuration or if the state asks to close the Assistant current session (if any)
+ @param iosAssistantType Defines, for the iOS version, the options related to the Assistant buttons configuration or if the state asks to close the Assistant current session (if any)
+ @param parent The parent state or nil
+ @return The new state
+ */
 - (nullable SMState *)createAssistantStateWithName:(nonnull NSString *)name
                               umlStateDescription : (nullable NSString *) umlStateDescription
                                      operationType: (IGenogramOperation) operationType
@@ -109,20 +115,6 @@
                                         cancelTitle: (nullable NSString *) cancelTitle
                                          suppressId: (nullable NSString *) suppressId
                                              parent: (nullable SMState *) parent;
-
-- (nullable SMState *)createMessageBoxStateWithName:(nonnull NSString *)name
-                               umlStateDescription : (nullable NSString *) umlStateDescription
-                                      operationType: (IGenogramOperation) operationType
-                                        messageType: (SMMessageType) messageType
-                                         osxMessage: (nullable NSString *) osxMessage
-                                 osxInformativeText: (nullable NSString *) osxInformativeText
-                                         iosMessage: (nullable NSString *) iosMessage
-                                 iosInformativeText: (nullable NSString *) iosInformativeText
-                                      osxHelpAnchor: (nullable NSString *) osxHelpAnchor
-                                      iosHelpAnchor: (nullable NSString *) iosHelpAnchor
-                                            okTitle: (nullable NSString *) okTitle
-                                        cancelTitle: (nullable NSString *) cancelTitle
-                                         suppressId: (nullable NSString *) suppressId;
 
 - (nullable SMDecision *)createDecision:(nonnull NSString *)name
                     umlStateDescription: (nullable NSString *) umlStateDescription

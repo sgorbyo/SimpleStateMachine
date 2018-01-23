@@ -92,32 +92,6 @@ NSString *CorrectLenghtAndCharForString(NSString *string, NSUInteger len) {
     return state;
 }
 
-- (nullable SMState *) createAssistantStateWithName:(NSString *)name
-                                umlStateDescription:(NSString *)umlStateDescription
-                                      operationType:(IGenogramOperation)operationType
-                                    stateCursorType:(SMStateCursorType)stateCursorType
-                                   stateCursorScope:(SMStateCursorScope)stateCursorScope
-                                         osxMessage:(NSString *)osxMessage
-                                         iosMessage:(NSString *)iosMessage
-                                      osxHelpAnchor:(NSString *)osxHelpAnchor
-                                      iosHelpAnchor:(NSString *)iosHelpAnchor
-                                   osxAssistantType:(SMStateAssistantOptions)osxAssistantType
-                                   iosAssistantType:(SMStateAssistantOptions)iosAssistantType {
-    
-    return [self createAssistantStateWithName:name
-                          umlStateDescription:umlStateDescription
-                                operationType:operationType
-                              stateCursorType:stateCursorType
-                             stateCursorScope:stateCursorScope
-                                   osxMessage:osxMessage
-                                   iosMessage:iosMessage
-                                osxHelpAnchor:osxHelpAnchor
-                                iosHelpAnchor:iosHelpAnchor
-                             osxAssistantType:osxAssistantType
-                             iosAssistantType:iosAssistantType
-                                       parent:nil];
-}
-
 - (SMState *)createMessageBoxStateWithName:(NSString *)name
                        umlStateDescription:(NSString *)umlStateDescription
                              operationType:(IGenogramOperation)operationType
@@ -149,36 +123,6 @@ NSString *CorrectLenghtAndCharForString(NSString *string, NSUInteger len) {
     state.parent = parent;
     [self.states addObject:state];
     return state;
-}
-
-- (SMState *)createMessageBoxStateWithName:(NSString *)name
-                       umlStateDescription:(NSString *)umlStateDescription
-                             operationType:(IGenogramOperation)operationType
-                               messageType:(SMMessageType) messageType
-                                osxMessage:(NSString *)osxMessage
-                        osxInformativeText:(NSString *)osxInformativeText
-                                iosMessage:(NSString *)iosMessage
-                        iosInformativeText:(NSString *)iosInformativeText
-                             osxHelpAnchor:(NSString *)osxHelpAnchor
-                             iosHelpAnchor:(NSString *)iosHelpAnchor
-                                   okTitle:(NSString *)okTitle
-                               cancelTitle:(NSString *)cancelTitle
-                                suppressId:(NSString *)suppressId {
-    
-    return [self createMessageBoxStateWithName:name
-                           umlStateDescription:umlStateDescription
-                                 operationType:operationType
-                                   messageType:messageType
-                                    osxMessage:osxMessage
-                            osxInformativeText:osxInformativeText
-                                    iosMessage:iosMessage
-                            iosInformativeText:iosInformativeText
-                                 osxHelpAnchor:osxHelpAnchor
-                                 iosHelpAnchor:iosHelpAnchor
-                                       okTitle:okTitle
-                                   cancelTitle:cancelTitle
-                                    suppressId:suppressId
-                                        parent:nil];
 }
 
 - (SMDecision *) createDecision:(NSString *)name
