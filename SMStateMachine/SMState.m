@@ -12,7 +12,7 @@
 @implementation SMState
 
 @synthesize entry = _entry;
-@synthesize exit = _exit; 
+@synthesize exit = _exit;
 
 - (instancetype)initAssistantStateWithName:(nonnull NSString *)name
                        umlStateDescription:(nullable NSString *)umlStateDescription
@@ -83,13 +83,23 @@
 }
 
 - (void)_postEvent:(NSString *)event withContext:(SMStateMachineExecuteContext *)context withPiggyback:(NSDictionary *)piggyback {
+    
     SMTransition *curTr = [self _getTransitionForEvent:event];
+    
+    if ([context.monitor respondsToSelector:@selector(receiveEvent:forState:foundTransition:piggyback:)]) {
+        [context.monitor receiveEvent:event forState:self foundTransition:curTr piggyback:piggyback];
+    }
     if ([context.monitor respondsToSelector:@selector(receiveEvent:forState:foundTransition:)]) {
         [context.monitor receiveEvent:event forState:self foundTransition:curTr];
+    }
+    
+    if ([context.monitor respondsToSelector:@selector(stateMachine:receiveEvent:forState:foundTransition:piggyback:)]) {
+        [context.monitor stateMachine:context.stateMachine receiveEvent:event forState:self foundTransition:curTr piggyback:piggyback];
     }
     if ([context.monitor respondsToSelector:@selector(stateMachine:receiveEvent:forState:foundTransition:)]) {
         [context.monitor stateMachine:context.stateMachine receiveEvent:event forState:self foundTransition:curTr];
     }
+    
     if (curTr != nil) {
         const BOOL shouldChangeStates = (nil != curTr.to);
         
@@ -108,8 +118,15 @@
         }
         
         // Inform the monitor.
+        if ([context.monitor respondsToSelector:@selector(didExecuteTransitionFrom:to:withEvent:piggyback:)]) {
+            [context.monitor didExecuteTransitionFrom:curTr.from to:context.curState withEvent:event piggyback:piggyback];
+        }
         if ([context.monitor respondsToSelector:@selector(didExecuteTransitionFrom:to:withEvent:)]) {
             [context.monitor didExecuteTransitionFrom:curTr.from to:context.curState withEvent:event];
+        }
+        
+        if ([context.monitor respondsToSelector:@selector(stateMachine:didExecuteTransitionFrom:to:withEvent:piggyback:)]) {
+            [context.monitor stateMachine: context.stateMachine didExecuteTransitionFrom:curTr.from to:context.curState withEvent:event piggyback:piggyback];
         }
         if ([context.monitor respondsToSelector:@selector(stateMachine:didExecuteTransitionFrom:to:withEvent:)]) {
             [context.monitor stateMachine: context.stateMachine didExecuteTransitionFrom:curTr.from to:context.curState withEvent:event];

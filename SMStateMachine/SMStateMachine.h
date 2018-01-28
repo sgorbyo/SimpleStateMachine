@@ -101,6 +101,20 @@
                                   iosAssistantType: (SMStateAssistantOptions) iosAssistantType
                                             parent: (nullable SMState *) parent;
 
+- (nullable SMState *)createIndividualOnTheFlyStateWithName:(nonnull NSString *)name
+                                       umlStateDescription : (nullable NSString *) umlStateDescription
+                                              operationType: (IGenogramOperation) operationType
+                                   cancelAddIndividualBlock: (nonnull SMIndividualOntheFlyBlock) cancelAddIndividualBlock
+                                         addIndividualBlock: (nonnull SMIndividualOntheFlyBlock) addIndividualBlock
+                                                     parent: (nullable SMState *) parent;
+
+- (nullable SMState *)createCoupleOnTheFlyStateWithName:(nonnull NSString *)name
+                                   umlStateDescription : (nullable NSString *) umlStateDescription
+                                          operationType: (IGenogramOperation) operationType
+                                   cancelAddCoupleBlock: (nonnull SMCoupleOntheFlyBlock) cancelAddCoupleBlock
+                                         addCoupleBlock: (nonnull SMCoupleOntheFlyBlock) addCoupleBlock
+                                                 parent: (nullable SMState *) parent;
+
 - (nullable SMState *)createMessageBoxStateWithName:(nonnull NSString *)name
                                umlStateDescription : (nullable NSString *) umlStateDescription
                                       operationType: (IGenogramOperation) operationType

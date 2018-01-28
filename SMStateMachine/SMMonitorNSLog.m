@@ -33,5 +33,9 @@
     NSLog(@"%@ finsh: %@ [%@] -> [%@]", self.smName, event, from.name, to.name);
 }
 
+- (void)didExecuteTransitionFrom:(SMState *)from to:(SMState *)to withEvent:(NSString *)event piggyback: (NSDictionary *) piggyback {
+    NSLog(@"%@ finsh: %@ [%@] -> [%@]", self.smName, event, from.name, to.name);
+}
+
 
 @end

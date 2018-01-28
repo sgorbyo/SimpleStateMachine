@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 #import "SMStateMachineExecuteContext.h"
 #import "iltStateClassification.h"
+#import "IgTypes.h"
 
 @interface SMNode : NSObject
 @property(nonatomic, readonly, strong, nonnull) NSString *name;
@@ -40,9 +41,16 @@
 @property (nonatomic, nullable, strong) NSString *okTitle;
 @property (nonatomic, nullable, strong) NSString *cancelTitle;
 
-//idle.osxAssistantType = @(AMO_Clear);
-//idle.stateClassificationScope = SMStateCursorTypeNormal;
-//idle.stateClassificationType = SMStateCursorTypeConnectingWaitingStart;
+
+@property (nonatomic, assign) NT_TYPE onTheFlyStartingIndividualType;
+@property (nonatomic, assign) NT_TYPE onTheFlyStartingIndividualType2;
+@property (nonatomic, assign) GU_TYPE onTheFlyStartingCoupleType;
+
+@property (nullable, nonatomic, copy) SMIndividualOntheFlyBlock onTheFlyCancelAddIndividualBlock;
+@property (nullable, nonatomic, copy) SMIndividualOntheFlyBlock onTheFlyAddIndividualBlock;
+
+@property (nullable, nonatomic, copy) SMCoupleOntheFlyBlock onTheFlyCancelAddCoupleBlock;
+@property (nullable, nonatomic, copy) SMCoupleOntheFlyBlock onTheFlyAddCoupleBlock;
 
 - (nullable instancetype) initWithName:(nonnull NSString *)name
                   umlStateDescription :(nullable NSString *) umlStateDescription

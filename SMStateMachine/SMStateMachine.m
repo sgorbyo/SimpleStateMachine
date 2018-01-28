@@ -92,6 +92,53 @@ NSString *CorrectLenghtAndCharForString(NSString *string, NSUInteger len) {
     return state;
 }
 
+- (SMState *) createIndividualOnTheFlyStateWithName:(NSString *)name
+                                umlStateDescription:(NSString *)umlStateDescription
+                                      operationType:(IGenogramOperation)operationType
+                           cancelAddIndividualBlock:(SMIndividualOntheFlyBlock) cancelAddIndividualBlock
+                                 addIndividualBlock:(SMIndividualOntheFlyBlock) addIndividualBlock
+                                             parent:(SMState *)parent {
+    
+    SMState *state = [[SMState alloc] initWithName:name
+                               umlStateDescription:umlStateDescription
+                                     operationType:operationType
+                                   stateCursorType:SMStateCursorTypeNone
+                                  stateCursorScope:SMStateCursorScopeNone
+                                    assistantClear:NO];
+    
+    state.onTheFlyCancelAddIndividualBlock = cancelAddIndividualBlock;
+    state.onTheFlyAddIndividualBlock = addIndividualBlock;
+    state.messageType = SMMessageTypeOnTheFlyIndividual;
+    
+    state.parent = parent;
+    
+    [self.states addObject:state];
+    return state;
+}
+
+- (SMState *) createCoupleOnTheFlyStateWithName:(NSString *)name
+                            umlStateDescription:(NSString *)umlStateDescription
+                                  operationType:(IGenogramOperation)operationType
+                           cancelAddCoupleBlock: (SMCoupleOntheFlyBlock) cancelAddCoupleBlock
+                                 addCoupleBlock: (SMCoupleOntheFlyBlock) addCoupleBlock
+                                         parent:(SMState *)parent {
+    
+    SMState *state = [[SMState alloc] initWithName:name
+                               umlStateDescription:umlStateDescription
+                                     operationType:operationType
+                                   stateCursorType:SMStateCursorTypeNone
+                                  stateCursorScope:SMStateCursorScopeNone
+                                    assistantClear:NO];
+    
+    state.onTheFlyCancelAddCoupleBlock  = cancelAddCoupleBlock;
+    state.onTheFlyAddCoupleBlock = addCoupleBlock;
+    
+    state.parent = parent;
+    
+    [self.states addObject:state];
+    return state;
+}
+
 - (SMState *)createMessageBoxStateWithName:(NSString *)name
                        umlStateDescription:(NSString *)umlStateDescription
                              operationType:(IGenogramOperation)operationType
@@ -360,40 +407,57 @@ NSString *CorrectLenghtAndCharForString(NSString *string, NSUInteger len) {
             }
             
         }
-        if (node.messageType != SMMessageTypeNone) {
-            result = [result stringByAppendingFormat:@"%@ : %@\n" , node.name, node.messageTypeDescription];
-            result = [result stringByAppendingFormat:@"%@ : <b>Type:</b> %@\n" , node.name, node.messageTypeDescription];
-            result = [result stringByAppendingFormat:@"%@ : <b>Osx Operation:</b>\\n%@\n" , node.name, node.osxTitle];
-            result = [result stringByAppendingFormat:@"%@ : <b>Ios Operation:</b>\\n%@\n" , node.name, node.iosTitle];
-            result = [result stringByAppendingFormat:@"%@ : <b>MessageOsx:</b>\\n%@\n" , node.name, CorrectLenghtAndCharForString(node.osxMessage, 35)];
-            result = [result stringByAppendingFormat:@"%@ : <b>InformativeTextOsx:</b>\\n%@\n" , node.name, CorrectLenghtAndCharForString(node.osxInformativeText, 35)];
-            result = [result stringByAppendingFormat:@"%@ : <b>OsxHelpAnchor:</b> %@\n" , node.name, node.osxHelpAnchor];
-            result = [result stringByAppendingFormat:@"%@ : <b>MessageIos:</b>\\n%@\n" , node.name, CorrectLenghtAndCharForString(node.iosMessage, 35)];
-            result = [result stringByAppendingFormat:@"%@ : <b>InformativeTextIos:</b>\\n%@\n" , node.name, CorrectLenghtAndCharForString(node.iosInformativeText, 35)];
-            result = [result stringByAppendingFormat:@"%@ : <b>IosHelpAnchor:</b> %@\n" , node.name, node.iosHelpAnchor];
-            
-            if (node.messageType != SMMessageTypeAssistant) {
+        result = [result stringByAppendingFormat:@"%@ : %@\n" , node.name, node.messageTypeDescription];
+        result = [result stringByAppendingFormat:@"%@ : <b>Type:</b> %@\n" , node.name, node.messageTypeDescription];
+        result = [result stringByAppendingFormat:@"%@ : <b>Osx Operation:</b>\\n%@\n" , node.name, node.osxTitle];
+        result = [result stringByAppendingFormat:@"%@ : <b>Ios Operation:</b>\\n%@\n" , node.name, node.iosTitle];
+        switch (node.messageType) {
+            case SMMessageTypeWarning:
+            case SMMessageTypeCritical:
+            case SMMessageTypeInformation:
+                result = [result stringByAppendingFormat:@"%@ : <b>MessageOsx:</b>\\n%@\n" , node.name, CorrectLenghtAndCharForString(node.osxMessage, 35)];
+                result = [result stringByAppendingFormat:@"%@ : <b>InformativeTextOsx:</b>\\n%@\n" , node.name, CorrectLenghtAndCharForString(node.osxInformativeText, 35)];
+                result = [result stringByAppendingFormat:@"%@ : <b>OsxHelpAnchor:</b> %@\n" , node.name, node.osxHelpAnchor];
+                result = [result stringByAppendingFormat:@"%@ : <b>MessageIos:</b>\\n%@\n" , node.name, CorrectLenghtAndCharForString(node.iosMessage, 35)];
+                result = [result stringByAppendingFormat:@"%@ : <b>InformativeTextIos:</b>\\n%@\n" , node.name, CorrectLenghtAndCharForString(node.iosInformativeText, 35)];
+                result = [result stringByAppendingFormat:@"%@ : <b>IosHelpAnchor:</b> %@\n" , node.name, node.iosHelpAnchor];
                 result = [result stringByAppendingFormat:@"%@ : <b>SuppressId:</b> %@\n" , node.name, node.suppressId];
                 result = [result stringByAppendingFormat:@"%@ : <b>OkTitle:</b> %@\n" , node.name, node.okTitle];
                 result = [result stringByAppendingFormat:@"%@ : <b>CancelTitle:</b> %@\n" , node.name, node.cancelTitle];
-            } else {
-                if (node.osxAssistantOptions & SMStateAssistantOptionsOkButton) {
-                    result = [result stringByAppendingFormat:@"%@ : <b>Osx OK Button</b>\n" , node.name];
+                break;
+            case SMMessageTypeAssistant:
+                result = [result stringByAppendingFormat:@"%@ : <b>MessageOsx:</b>\\n%@\n" , node.name, CorrectLenghtAndCharForString(node.osxMessage, 35)];
+                result = [result stringByAppendingFormat:@"%@ : <b>OsxHelpAnchor:</b> %@\n" , node.name, node.osxHelpAnchor];
+                result = [result stringByAppendingFormat:@"%@ : <b>MessageIos:</b>\\n%@\n" , node.name, CorrectLenghtAndCharForString(node.iosMessage, 35)];
+                result = [result stringByAppendingFormat:@"%@ : <b>IosHelpAnchor:</b> %@\n" , node.name, node.iosHelpAnchor];
+                if (node.osxAssistantOptions & SMStateAssistantOptionsRemoveAssistant) {
+                    result = [result stringByAppendingFormat:@"%@ : <b>Clear Assistant Area</b>\n" , node.name];
+                } else {
+                    if (node.osxAssistantOptions & SMStateAssistantOptionsOkButton) {
+                        result = [result stringByAppendingFormat:@"%@ : <b>Osx OK Button</b>\n" , node.name];
+                    }
+                    if (node.iosAssistantOptions & SMStateAssistantOptionsOkButton) {
+                        result = [result stringByAppendingFormat:@"%@ : <b>Ios OK Button</b>\n" , node.name];
+                    }
+                    if (node.osxAssistantOptions & SMStateAssistantOptionsCancelButton) {
+                        result = [result stringByAppendingFormat:@"%@ : <b>Osx CANCEL Button</b>\n" , node.name];
+                    }
+                    if (node.iosAssistantOptions & SMStateAssistantOptionsCancelButton) {
+                        result = [result stringByAppendingFormat:@"%@ : <b>Ios CANCEL Button</b>\n" , node.name];
+                    }
                 }
-                if (node.iosAssistantOptions & SMStateAssistantOptionsOkButton) {
-                    result = [result stringByAppendingFormat:@"%@ : <b>Ios OK Button</b>\n" , node.name];
-                }
-                if (node.osxAssistantOptions & SMStateAssistantOptionsCancelButton) {
-                    result = [result stringByAppendingFormat:@"%@ : <b>Osx CANCEL Button</b>\n" , node.name];
-                }
-                if (node.iosAssistantOptions & SMStateAssistantOptionsCancelButton) {
-                    result = [result stringByAppendingFormat:@"%@ : <b>Ios CANCEL Button</b>\n" , node.name];
-                }
-            }
+                break;
+            case SMMessageTypeOnTheFlyIndividual:
+                result = [result stringByAppendingFormat:@"%@ : <b>Initial Individual Type:</b>\\n%d\n" , node.name, node.onTheFlyStartingIndividualType];
+                break;
+            case SMMessageTypeOnTheFlyParents:
+                result = [result stringByAppendingFormat:@"%@ : <b>Initial Couple Type:</b>\\n%d\n" , node.name, node.onTheFlyStartingCoupleType];
+                result = [result stringByAppendingFormat:@"%@ : <b>Initial Individual1 Type:</b>\\n%d\n" , node.name, node.onTheFlyStartingIndividualType];
+                result = [result stringByAppendingFormat:@"%@ : <b>Initial Individual2 Type:</b>\\n%d\n" , node.name, node.onTheFlyStartingIndividualType2];
+            default:
+                break;
         }
-        if (node.osxAssistantOptions & SMStateAssistantOptionsRemoveAssistant) {
-            result = [result stringByAppendingFormat:@"%@ : <b>Clear Assistant Area</b>\n" , node.name];
-        }
+        
     }
     return result;
 }

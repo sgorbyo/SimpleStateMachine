@@ -14,9 +14,18 @@
 @end
 
 @implementation SMNode
+
 @synthesize name = _name;
 @synthesize transitions = _transitions;
 @synthesize parent = _parent;
+
+@synthesize onTheFlyStartingIndividualType = _onTheFlyStartingIndividualType;
+@synthesize onTheFlyStartingIndividualType2 = _onTheFlyStartingIndividualType2;
+@synthesize onTheFlyStartingCoupleType = _onTheFlyStartingCoupleType;
+@synthesize onTheFlyCancelAddIndividualBlock = _onTheFlyCancelAddIndividualBlock;
+@synthesize onTheFlyAddIndividualBlock = _onTheFlyAddIndividualBlock;
+@synthesize onTheFlyCancelAddCoupleBlock = _onTheFlyCancelAddCoupleBlock;
+@synthesize onTheFlyAddCoupleBlock = _onTheFlyAddCoupleBlock;
 
 - (instancetype) initWithName:(NSString *)name
           umlStateDescription:(NSString *)umlStateDescription

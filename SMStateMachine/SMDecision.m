@@ -61,18 +61,33 @@
         [NSException raise:SMEXCEPTION format:@"Invalid event for this decision"];
         return;
     }
+    if ([context.monitor respondsToSelector:@selector(receiveEvent:forState:foundTransition:piggyback:)]) {
+        [context.monitor receiveEvent:eventToPost forState:self foundTransition:curTr piggyback:piggyback];
+    }
     if ([context.monitor respondsToSelector:@selector(receiveEvent:forState:foundTransition:)]) {
         [context.monitor receiveEvent:eventToPost forState:self foundTransition:curTr];
+    }
+    
+    if ([context.monitor respondsToSelector:@selector(stateMachine:receiveEvent:forState:foundTransition:piggyback:)]) {
+        [context.monitor stateMachine: context.stateMachine receiveEvent:eventToPost forState:self foundTransition:curTr piggyback:piggyback];
     }
     if ([context.monitor respondsToSelector:@selector(stateMachine:receiveEvent:forState:foundTransition:)]) {
         [context.monitor stateMachine: context.stateMachine receiveEvent:eventToPost forState:self foundTransition:curTr];
     }
+    
     context.curState = curTr.to;
 
     [[curTr action] executeWithPiggyback:piggyback];
     [context.curState _entryWithContext:context withPiggyback:piggyback];
+    if ([context.monitor respondsToSelector:@selector(didExecuteTransitionFrom:to:withEvent:piggyback:)]) {
+        [context.monitor didExecuteTransitionFrom:curTr.from to:context.curState withEvent:eventToPost piggyback:piggyback];
+    }
     if ([context.monitor respondsToSelector:@selector(didExecuteTransitionFrom:to:withEvent:)]) {
         [context.monitor didExecuteTransitionFrom:curTr.from to:context.curState withEvent:eventToPost];
+    }
+    
+    if ([context.monitor respondsToSelector:@selector(stateMachine:didExecuteTransitionFrom:to:withEvent:piggyback:)]) {
+        [context.monitor stateMachine: context.stateMachine didExecuteTransitionFrom:curTr.from to:context.curState withEvent:eventToPost piggyback:piggyback];
     }
     if ([context.monitor respondsToSelector:@selector(stateMachine:didExecuteTransitionFrom:to:withEvent:)]) {
         [context.monitor stateMachine: context.stateMachine didExecuteTransitionFrom:curTr.from to:context.curState withEvent:eventToPost];
