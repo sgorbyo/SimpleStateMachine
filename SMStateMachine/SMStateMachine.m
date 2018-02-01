@@ -132,6 +132,7 @@ NSString *CorrectLenghtAndCharForString(NSString *string, NSUInteger len) {
     
     state.onTheFlyCancelAddCoupleBlock  = cancelAddCoupleBlock;
     state.onTheFlyAddCoupleBlock = addCoupleBlock;
+    state.messageType = SMMessageTypeOnTheFlyParents;
     
     state.parent = parent;
     

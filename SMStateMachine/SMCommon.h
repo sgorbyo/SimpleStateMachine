@@ -19,7 +19,7 @@ typedef void (^SMIndividualOntheFlyBlock)(NSValue * _Nonnull point,
                                           NSString * _Nullable chosenName);
 
 typedef void (^SMCoupleOntheFlyBlock)(NSValue * _Nonnull point,
-                                      GU_TYPE cancelAddCoupleBlock,
+                                      GU_TYPE chosenCoupleType,
                                       NT_TYPE chosenInvidivualType,
                                       NT_TYPE chosenInvidivual2Type,
                                       NSString * _Nullable chosenIndividual1Name,
