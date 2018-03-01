@@ -95,6 +95,13 @@ NSString *CorrectLenghtAndCharForString(NSString *string, NSUInteger len) {
 - (SMState *) createIndividualOnTheFlyStateWithName:(NSString *)name
                                 umlStateDescription:(NSString *)umlStateDescription
                                       operationType:(IGenogramOperation)operationType
+                                         osxMessage:(NSString *)osxMessage
+                                 osxInformativeText:(NSString *)osxInformativeText
+                                         iosMessage:(NSString *)iosMessage
+                                 iosInformativeText:(NSString *)iosInformativeText
+                                      osxHelpAnchor:(NSString *)osxHelpAnchor
+                                      iosHelpAnchor:(NSString *)iosHelpAnchor
+
                            cancelAddIndividualBlock:(SMIndividualOntheFlyBlock) cancelAddIndividualBlock
                                  addIndividualBlock:(SMIndividualOntheFlyBlock) addIndividualBlock
                                              parent:(SMState *)parent {
@@ -109,6 +116,10 @@ NSString *CorrectLenghtAndCharForString(NSString *string, NSUInteger len) {
     state.onTheFlyCancelAddIndividualBlock = cancelAddIndividualBlock;
     state.onTheFlyAddIndividualBlock = addIndividualBlock;
     state.messageType = SMMessageTypeOnTheFlyIndividual;
+    state.osxMessage = osxMessage;
+    state.osxInformativeText = osxInformativeText;
+    state.iosMessage = iosMessage;
+    state.iosInformativeText = iosInformativeText;
     
     state.parent = parent;
     
@@ -119,6 +130,12 @@ NSString *CorrectLenghtAndCharForString(NSString *string, NSUInteger len) {
 - (SMState *) createCoupleOnTheFlyStateWithName:(NSString *)name
                             umlStateDescription:(NSString *)umlStateDescription
                                   operationType:(IGenogramOperation)operationType
+                                     osxMessage:(NSString *)osxMessage
+                             osxInformativeText:(NSString *)osxInformativeText
+                                     iosMessage:(NSString *)iosMessage
+                             iosInformativeText:(NSString *)iosInformativeText
+                                  osxHelpAnchor:(NSString *)osxHelpAnchor
+                                  iosHelpAnchor:(NSString *)iosHelpAnchor
                            cancelAddCoupleBlock: (SMCoupleOntheFlyBlock) cancelAddCoupleBlock
                                  addCoupleBlock: (SMCoupleOntheFlyBlock) addCoupleBlock
                                          parent:(SMState *)parent {
@@ -133,6 +150,10 @@ NSString *CorrectLenghtAndCharForString(NSString *string, NSUInteger len) {
     state.onTheFlyCancelAddCoupleBlock  = cancelAddCoupleBlock;
     state.onTheFlyAddCoupleBlock = addCoupleBlock;
     state.messageType = SMMessageTypeOnTheFlyParents;
+    state.osxMessage = osxMessage;
+    state.osxInformativeText = osxInformativeText;
+    state.iosMessage = iosMessage;
+    state.iosInformativeText = iosInformativeText;
     
     state.parent = parent;
     

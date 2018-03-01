@@ -104,16 +104,28 @@
 - (nullable SMState *)createIndividualOnTheFlyStateWithName:(nonnull NSString *)name
                                        umlStateDescription : (nullable NSString *) umlStateDescription
                                               operationType: (IGenogramOperation) operationType
+                                                 osxMessage:(nullable NSString *)osxMessage
+                                         osxInformativeText:(nullable NSString *)osxInformativeText
+                                                 iosMessage:(nullable NSString *)iosMessage
+                                         iosInformativeText:(nullable NSString *)iosInformativeText
+                                              osxHelpAnchor:(nullable NSString *)osxHelpAnchor
+                                              iosHelpAnchor:(nullable NSString *)iosHelpAnchor
                                    cancelAddIndividualBlock: (nonnull SMIndividualOntheFlyBlock) cancelAddIndividualBlock
                                          addIndividualBlock: (nonnull SMIndividualOntheFlyBlock) addIndividualBlock
                                                      parent: (nullable SMState *) parent;
 
-- (nullable SMState *)createCoupleOnTheFlyStateWithName:(nonnull NSString *)name
-                                   umlStateDescription : (nullable NSString *) umlStateDescription
-                                          operationType: (IGenogramOperation) operationType
-                                   cancelAddCoupleBlock: (nonnull SMCoupleOntheFlyBlock) cancelAddCoupleBlock
-                                         addCoupleBlock: (nonnull SMCoupleOntheFlyBlock) addCoupleBlock
-                                                 parent: (nullable SMState *) parent;
+- (nullable SMState *) createCoupleOnTheFlyStateWithName:(nonnull NSString *)name
+                            umlStateDescription:(nullable NSString *)umlStateDescription
+                                  operationType:(IGenogramOperation)operationType
+                                     osxMessage:(nullable NSString *)osxMessage
+                             osxInformativeText:(nullable NSString *)osxInformativeText
+                                     iosMessage:(nullable NSString *)iosMessage
+                             iosInformativeText:(nullable NSString *)iosInformativeText
+                                  osxHelpAnchor:(nullable NSString *)osxHelpAnchor
+                                  iosHelpAnchor:(nullable NSString *)iosHelpAnchor
+                           cancelAddCoupleBlock:(nonnull SMCoupleOntheFlyBlock) cancelAddCoupleBlock
+                                 addCoupleBlock:(nonnull SMCoupleOntheFlyBlock) addCoupleBlock
+                                         parent:(nullable SMState *)parent;
 
 - (nullable SMState *)createMessageBoxStateWithName:(nonnull NSString *)name
                                umlStateDescription : (nullable NSString *) umlStateDescription
